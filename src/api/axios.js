@@ -1,12 +1,8 @@
 import axios from 'axios';
 import 'dotenv/config';
 
-DEBUG = process.env.DEBUG;
-if (DEBUG) {
-    BASE_URL = 'http://localhost:8003/api/v1';
-} else {
-    BASE_URL = 'https://wa.azharfa.cloud/api/v1';
-}
+
+BASE_URL = 'https://wa.azharfa.cloud/api/v1';
 
 // PENANGKAL XSS: Token disimpan di memori private (closure)
 let accessToken = null;
