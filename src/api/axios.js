@@ -1,5 +1,4 @@
 import axios from 'axios';
-import 'dotenv/config';
 
 const BASE_URL = 'https://wa.azharfa.cloud/api/v1';
 
