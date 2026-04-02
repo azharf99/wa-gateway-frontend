@@ -1,4 +1,4 @@
-name: Deploy Portfolio Frontend to VPS
+name: Deploy WA Gateway Frontend to VPS
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-deploy:
-    name: Build Portfolio Frontend and Deploy
+    name: Build WA Gateway Frontend and Deploy
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
