@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ShieldCheck, KeyRound, AlertCircle, CheckCircle } from 'lucide-react';
 import axiosInstance from '../api/axios';
+import { AuthContext } from '../context/AuthContext';
 
 const AccountSettings = () => {
     const { user } = useContext(AuthContext);
