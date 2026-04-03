@@ -12,7 +12,7 @@ import ReminderManager from '../components/ReminderManager';
 import AccountSettings from '../components/AccountSettings';
 
 const Dashboard = () => {
-    const { logout } = useContext(AuthContext);
+    const { logout, user } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('status');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -49,6 +49,7 @@ const Dashboard = () => {
                     <h1 className="text-xl font-bold text-white tracking-wider flex items-center">
                         <Smartphone className="mr-2 text-green-400" /> WA Gateway
                     </h1>
+                    <p className="text-sm text-white">{user.username}</p>
                 </div>
                 <nav className="flex-1 px-4 space-y-2">
                     {navItems.map((item) => (

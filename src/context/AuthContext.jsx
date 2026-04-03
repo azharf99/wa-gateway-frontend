@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import axiosInstance, { setAccessToken } from '../api/axios';
 
 export const AuthContext = createContext();
@@ -6,11 +7,24 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [token, setTokenState] = useState(null);
     const [loading, setLoading] = useState(true); // Loading saat Silent Login berjalan
+    const [user, setUser] = useState(null);
 
     // Helper untuk update state React sekaligus update Axios memory
     const updateToken = (newToken) => {
         setTokenState(newToken);
         setAccessToken(newToken);
+        // Decode token untuk mendapatkan data user
+        if (newToken) {
+            try {
+                const decoded = jwtDecode(newToken);
+                setUser(decoded); // Sekarang kamu punya akses ke user.user_id / user.username (tergantung payload JWT backend-mu)
+            } catch (error) {
+                console.error("Gagal mendecode token", error);
+                setUser(null);
+            }
+        } else {
+            setUser(null);
+        }
     };
 
     // SILENT LOGIN: Berjalan sekali saat web pertama kali dibuka/di-refresh
@@ -23,6 +37,7 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 // Jika gagal (belum login atau cookie kedaluwarsa), pastikan state bersih
                 updateToken(null);
+                setUser(null);
             } finally {
                 setLoading(false); // Selesai loading, tampilkan UI
             }
@@ -48,6 +63,7 @@ export const AuthProvider = ({ children }) => {
             console.error("Gagal logout di server", error);
         } finally {
             updateToken(null);
+            setUser(null);
             window.location.href = '/login';
         }
     };
@@ -62,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{ token, login, logout, user }}>
             {children}
         </AuthContext.Provider>
     );

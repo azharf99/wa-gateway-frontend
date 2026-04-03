@@ -3,6 +3,7 @@ import { ShieldCheck, KeyRound, AlertCircle, CheckCircle } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
 const AccountSettings = () => {
+    const { user } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         old_password: '',
         new_password: '',
@@ -49,7 +50,7 @@ const AccountSettings = () => {
         <div className="max-w-2xl">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                    <ShieldCheck className="mr-2 text-emerald-500 w-6 h-6" /> Keamanan Akun
+                    <ShieldCheck className="mr-2 text-emerald-500 w-6 h-6" /> Keamanan Akun {user.username}
                 </h2>
 
                 {alert.show && (
