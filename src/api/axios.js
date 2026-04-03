@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://wa.azharfa.cloud/api/v1';
+// const BASE_URL = 'http://localhost:8003/api/v1';
 
 // PENANGKAL XSS: Token disimpan di memori private (closure)
 let accessToken = null;
@@ -37,11 +38,11 @@ axiosInstance.interceptors.response.use(
         // tolak langsung error-nya ke pemanggil (AuthContext) 
         // dan JANGAN proses logika retry di bawah.
         // ========================================================
-        if (originalRequest.url.includes('/auth/refresh')) {
+        if (originalRequest.url.includes('/auth/refresh') || originalRequest.url.includes('/auth/login')) {
             return Promise.reject(error);
         }
 
-        // Jika error 401 terjadi pada endpoint LAIN (misal saat ngirim pesan)
+        // Jika error 401 terjadi pada endpoint LAIN (misal: /whatsapp/send)
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
