@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, Smartphone, Users, Send, Contact, AlarmClock, CalendarClock, Megaphone, Menu } from 'lucide-react';
+import { LogOut, Smartphone, Users, Send, Contact, User, AlarmClock, CalendarClock, Megaphone, Menu } from 'lucide-react';
 
 import DeviceStatus from '../components/DeviceStatus';
 import GroupList from '../components/GroupList';
@@ -9,6 +9,7 @@ import ScheduleMessage from '../components/ScheduleMessage';
 import BroadcastMessage from '../components/BroadcastMessage';
 import ContactManager from '../components/ContactManager';
 import ReminderManager from '../components/ReminderManager';
+import AccountSettings from '../components/AccountSettings';
 
 const Dashboard = () => {
     const { logout } = useContext(AuthContext);
@@ -17,6 +18,7 @@ const Dashboard = () => {
 
     const navItems = [
         { id: 'status', label: 'Status Device', icon: <Smartphone className="w-5 h-5" /> },
+        { id: 'account', label: 'Pengaturan Akun', icon: <User className="w-5 h-5" /> },
         { id: 'send', label: 'Kirim Pesan', icon: <Send className="w-5 h-5" /> },
         { id: 'contact', label: 'Kontak', icon: <Contact className="w-5 h-5" /> },
         { id: 'reminder', label: 'Reminder', icon: <AlarmClock className="w-5 h-5" /> },
@@ -28,6 +30,7 @@ const Dashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'status': return <DeviceStatus />;
+            case 'account': return <AccountSettings />;
             case 'contact': return <ContactManager />;
             case 'reminder': return <ReminderManager />;
             case 'groups': return <GroupList />;
