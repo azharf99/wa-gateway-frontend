@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom'; // 1. Tambahkan import Navigate
 import { AuthContext } from '../context/AuthContext';
 import { MessageSquare } from 'lucide-react';
 
@@ -7,8 +7,15 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { login, loading } = useContext(AuthContext);
+    
+    // 2. Ekstrak 'token' dari AuthContext
+    const { login, loading, token } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    // 3. Pengecekan status login: Jika punya token, tendang kembali ke Dashboard
+    if (token) {
+        return <Navigate to="/" replace />;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
