@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: `https://wa.azharfa.cloud`,
+        target: `http://localhost:8003`,
         changeOrigin: true,
       },
     },
