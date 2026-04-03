@@ -1,9 +1,21 @@
 import axios from 'axios';
 
-const BASE_URL = '/api';
+const BASE_URL = '/api'; // Pastikan ini sesuai dengan prefix route backend kamu
 
-// PENANGKAL XSS: Token disimpan di memori private (closure)
 let accessToken = null;
+let isRefreshing = false; // Flag status refresh
+let failedQueue = []; // Antrean untuk menahan request yang barengan
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
 
 export const setAccessToken = (token) => {
     accessToken = token;
@@ -31,35 +43,47 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // ========================================================
-        // 🚨 PERBAIKAN FATAL: CEGAH INFINITE LOOP
-        // Jika request yang gagal (401) adalah endpoint /refresh,
-        // tolak langsung error-nya ke pemanggil (AuthContext) 
-        // dan JANGAN proses logika retry di bawah.
-        // ========================================================
         if (originalRequest.url.includes('/auth/refresh') || originalRequest.url.includes('/auth/login')) {
             return Promise.reject(error);
         }
 
-        // Jika error 401 terjadi pada endpoint LAIN (misal: /whatsapp/send)
         if (error.response?.status === 401 && !originalRequest._retry) {
+            
+            // Jika SEDANG refresh token, masukkan request ini ke antrean (Queue)
+            if (isRefreshing) {
+                return new Promise(function(resolve, reject) {
+                    failedQueue.push({ resolve, reject });
+                }).then(token => {
+                    originalRequest.headers['Authorization'] = 'Bearer ' + token;
+                    return axiosInstance(originalRequest);
+                }).catch(err => {
+                    return Promise.reject(err);
+                });
+            }
+
             originalRequest._retry = true;
+            isRefreshing = true;
 
             try {
-                // Gunakan axios BUKAN axiosInstance agar tidak masuk interceptor lagi
+                // Proses Refresh Token
                 const res = await axios.post(`${BASE_URL}/auth/refresh`, {}, { withCredentials: true });
                 const newAccessToken = res.data.data.access_token;
                 
                 setAccessToken(newAccessToken); 
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                 
-                // Ulangi request aslinya dengan token baru
+                // BERITAHU REACT SECARA BACKGROUND BAHWA TOKEN SUDAH BARU
+                window.dispatchEvent(new CustomEvent('onTokenRefreshed', { detail: newAccessToken }));
+                
+                processQueue(null, newAccessToken); // Bebaskan semua antrean
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
-                // Jika refresh token juga expired (misal setelah 7 hari tidak buka aplikasi)
+                processQueue(refreshError, null);
                 setAccessToken(null);
                 window.location.href = '/login'; 
                 return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
             }
         }
         
