@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, Smartphone, Users, Send, Contact, User, Key, AlarmClock, CalendarClock, Megaphone, Menu } from 'lucide-react';
+import { LogOut, Smartphone, Users, Send, Contact, User, Key, AlarmClock, CalendarClock, Megaphone, Menu, MessageSquareQuote } from 'lucide-react';
 
 import DeviceStatus from '../components/DeviceStatus';
 import GroupList from '../components/GroupList';
@@ -11,6 +11,7 @@ import ContactManager from '../components/ContactManager';
 import ReminderManager from '../components/ReminderManager';
 import AccountSettings from '../components/AccountSettings';
 import ApiKeyManager from '../components/ApiKeyManager';
+import AutoReplyManager from '../components/AutoReplyManager';
 
 
 const Dashboard = () => {
@@ -23,6 +24,7 @@ const Dashboard = () => {
         { id: 'account', label: 'Pengaturan Akun', icon: <User className="w-5 h-5" /> },
         { id: 'apikey', label: 'API Key', icon: <Key className="w-5 h-5" /> }, // Item menu baru
         { id: 'send', label: 'Kirim Pesan', icon: <Send className="w-5 h-5" /> },
+        { id: 'autoreply', label: 'Auto Reply', icon: <MessageSquareQuote className="w-5 h-5" /> },
         { id: 'contact', label: 'Kontak', icon: <Contact className="w-5 h-5" /> },
         { id: 'reminder', label: 'Reminder', icon: <AlarmClock className="w-5 h-5" /> },
         { id: 'schedule', label: 'Jadwal Pesan', icon: <CalendarClock className="w-5 h-5" /> },
@@ -37,6 +39,7 @@ const Dashboard = () => {
             case 'apikey': return <ApiKeyManager />; // Render komponen API Key
             case 'contact': return <ContactManager />;
             case 'reminder': return <ReminderManager />;
+            case 'autoreply': return <AutoReplyManager />;
             case 'groups': return <GroupList />;
             case 'send': return <SendMessage />;         
             case 'schedule': return <ScheduleMessage />; 
