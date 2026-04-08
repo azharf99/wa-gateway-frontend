@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CalendarClock, AlertCircle, CheckCircle, Clock, Paperclip, Image, FileText, Video } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
-const ScheduleMessage = () => {
+const ScheduleMessage = ({deviceId}) => {
     const [to, setTo] = useState('');
     const [isGroup, setIsGroup] = useState(false);
     const [message, setMessage] = useState('');
@@ -44,6 +44,7 @@ const ScheduleMessage = () => {
             if (file) {
                 // LOGIC MEDIA TERJADWAL
                 const formData = new FormData();
+                formData.append('device_id', parseInt(deviceId));
                 formData.append('file', file);
                 formData.append('to', to); // Kirim raw JID, is_group diurus backend
                 formData.append('is_group', isGroup);
@@ -58,6 +59,7 @@ const ScheduleMessage = () => {
                 // LOGIC TEKS TERJADWAL
                 await axiosInstance.post('/schedule/message', {
                     to: formattedTo,
+                    device_id: parseInt(deviceId),
                     message: message,
                     run_at: formattedDate
                 });

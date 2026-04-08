@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageSquareQuote, Plus, Edit, Trash2, CheckCircle2, AlertCircle, ToggleLeft, ToggleRight } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
-const AutoReplyManager = () => {
+const AutoReplyManager = ({ deviceId }) => {
     const [replies, setReplies] = useState([]);
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ type: '', message: '' });
@@ -46,6 +46,7 @@ const AutoReplyManager = () => {
             setIsEditing(true);
             setFormData({
                 id: reply.id,
+                device_id: parseInt(deviceId),
                 keyword: reply.keyword,
                 reply_text: reply.reply_text,
                 match_type: reply.match_type,

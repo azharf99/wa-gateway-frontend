@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Megaphone, FileSpreadsheet, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
-const BroadcastMessage = () => {
+const BroadcastMessage = ({ deviceId }) => {
     const [file, setFile] = useState(null);
     const [template, setTemplate] = useState('Halo {{nama}},\n\nBerikut adalah nilai ujian akhir Anda:\nMatematika: {{nilai_mtk}}\nBahasa: {{nilai_bahasa}}\n\nTerima kasih.');
     
@@ -21,6 +21,7 @@ const BroadcastMessage = () => {
         setAlert({ show: false, type: '', text: '' });
 
         const formData = new FormData();
+        formData.append('device_id', parseInt(deviceId));
         formData.append('file', file);
         formData.append('message_template', template);
 

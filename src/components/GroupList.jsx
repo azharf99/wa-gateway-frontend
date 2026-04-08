@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, Copy, RefreshCw } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
-const GroupList = () => {
+const GroupList = ({ deviceId }) => {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(false);
     const [copiedId, setCopiedId] = useState(null);
@@ -10,7 +10,7 @@ const GroupList = () => {
     const fetchGroups = async () => {
         setLoading(true);
         try {
-            const res = await axiosInstance.get('/whatsapp/groups');
+            const res = await axiosInstance.get(`/whatsapp/groups?device_id=${deviceId}`);
             setGroups(res.data.data || []);
         } catch (error) {
             console.error("Gagal mengambil daftar grup", error);

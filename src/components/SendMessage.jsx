@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send, Paperclip, AlertCircle, CheckCircle, Image, FileText, Video } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
-const SendMessage = () => {
+const SendMessage = ({ deviceId }) => {
     const [to, setTo] = useState('');
     const [isGroup, setIsGroup] = useState(false);
     const [message, setMessage] = useState('');
@@ -33,13 +33,14 @@ const SendMessage = () => {
             if (file) {
                 // LOGIC KIRIM MEDIA (Menggunakan FormData)
                 const formData = new FormData();
+                formData.append('device_id', parseInt(deviceId));
                 formData.append('file', file);
                 formData.append('to', to);
                 formData.append('is_group', isGroup);
                 formData.append('caption', message);
                 formData.append('media_type', mediaType);
 
-                await axiosInstance.post('/whatsapp/media', formData, {
+                await axiosInstance.post('/whatsapp/send-media', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
             } else {
@@ -53,8 +54,10 @@ const SendMessage = () => {
                 }
 
                 await axiosInstance.post('/whatsapp/send', {
+                    device_id: parseInt(deviceId),
                     to: formattedTo,
-                    message: message
+                    message: message,
+                    is_group: isGroup
                 });
             }
 

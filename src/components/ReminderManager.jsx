@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlarmClock, Plus, Trash2, Edit, X, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
-const ReminderManager = () => {
+const ReminderManager = ({ deviceId }) => {
     const [reminders, setReminders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +48,7 @@ const ReminderManager = () => {
             // Re-format date for backend
             const payload = { 
                 ...formData, 
+                device_id: parseInt(deviceId),
                 next_run: formData.next_run.replace('T', ' ') + ':00' 
             };
 
