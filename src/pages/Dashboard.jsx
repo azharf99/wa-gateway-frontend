@@ -144,7 +144,7 @@ const Dashboard = () => {
                         <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-green-400 dark:to-emerald-500 flex items-center">
                             <Smartphone className="mr-2 text-emerald-500 dark:text-green-400 w-6 h-6" /> WA Gateway
                         </h1>
-                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">SMAS IT Al Binaa • {user?.username}</p>
+                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">azharfa.cloud • {user?.username}</p>
                     </div>
                     <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden p-2 text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:text-white rounded-lg dark:hover:bg-slate-800">
                         <X className="w-5 h-5" />
