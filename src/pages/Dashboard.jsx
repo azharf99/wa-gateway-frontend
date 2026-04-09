@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     MessageSquare, Send, Calendar, Clock, 
-    Smartphone, Users, ShieldCheck, LogOut 
+    Smartphone, Users, ShieldCheck, LogOut, Key
 } from 'lucide-react';
 import axiosInstance from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
-
+import MessageLogs from '../components/MessageLogs';
 import DeviceManager from '../components/DeviceManager';
 import SendMessage from '../components/SendMessage';
 import BroadcastMessage from '../components/BroadcastMessage';
@@ -16,6 +16,8 @@ import ContactManager from '../components/ContactManager';
 import AutoReplyManager from '../components/AutoReplyManager';
 import AccountSettings from '../components/AccountSettings';
 import GroupList from '../components/GroupList';
+import ApiKeyManager from '../components/ApiKeyManager';
+
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState('devices');
@@ -85,8 +87,10 @@ const Dashboard = () => {
             case 'reminder': return <ReminderManager deviceId={activeDeviceId} />;
             case 'autoreply': return <AutoReplyManager deviceId={activeDeviceId} />;
             case 'groups': return <GroupList deviceId={activeDeviceId} />;
+            case 'logs': return <MessageLogs deviceId={activeDeviceId} />;
             case 'contacts': return <ContactManager />;
             case 'account': return <AccountSettings />;
+            case 'api-key': return <ApiKeyManager />;
             default: return <DeviceManager devices={devices} refreshDevices={fetchGlobalDevices} />;
         }
     };
@@ -110,7 +114,9 @@ const Dashboard = () => {
                     <button onClick={() => setActiveTab('autoreply')} className={`flex items-center w-full px-6 py-3 text-left transition-all ${activeTab === 'autoreply' ? 'bg-indigo-600 text-white border-r-4 border-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}><MessageSquare className="w-5 h-5 mr-3" /> Auto Reply</button>
                     <button onClick={() => setActiveTab('groups')} className={`flex items-center w-full px-6 py-3 text-left transition-all ${activeTab === 'groups' ? 'bg-indigo-600 text-white border-r-4 border-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}><Users className="w-5 h-5 mr-3" /> Daftar Grup</button>
                     <button onClick={() => setActiveTab('contacts')} className={`flex items-center w-full px-6 py-3 text-left transition-all ${activeTab === 'contacts' ? 'bg-indigo-600 text-white border-r-4 border-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}><Users className="w-5 h-5 mr-3" /> Buku Kontak</button>
+                    <button onClick={() => setActiveTab('logs')} className={`flex items-center w-full px-6 py-3 text-left transition-all ${activeTab === 'logs' ? 'bg-indigo-600 text-white border-r-4 border-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}><MessageSquare className="w-5 h-5 mr-3" /> Riwayat Pesan</button>
                     <button onClick={() => setActiveTab('account')} className={`flex items-center w-full px-6 py-3 text-left transition-all ${activeTab === 'account' ? 'bg-indigo-600 text-white border-r-4 border-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}><ShieldCheck className="w-5 h-5 mr-3" /> Keamanan Akun</button>
+                    <button onClick={() => setActiveTab('api-key')} className={`flex items-center w-full px-6 py-3 text-left transition-all ${activeTab === 'api-key' ? 'bg-indigo-600 text-white border-r-4 border-indigo-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}><Key className="w-5 h-5 mr-3" /> API Key</button>
                 </nav>
             </div>
             
