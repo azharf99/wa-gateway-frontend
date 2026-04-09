@@ -30,9 +30,9 @@ const GroupList = ({ deviceId }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 flex items-center">
                     <Users className="mr-2 text-purple-500" /> Daftar Grup Tersimpan
                 </h2>
                 <button 
@@ -47,7 +47,7 @@ const GroupList = ({ deviceId }) => {
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                        <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200 dark:border-slate-800">
                             <th className="p-3 font-medium">Nama Grup</th>
                             <th className="p-3 font-medium">Group JID</th>
                             <th className="p-3 font-medium text-center">Aksi</th>
@@ -61,7 +61,7 @@ const GroupList = ({ deviceId }) => {
                         ) : (
                             groups.map((group) => (
                                 <tr key={group.jid} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                    <td className="p-3 font-medium text-gray-800">{group.name}</td>
+                                    <td className="p-3 font-medium text-gray-800 dark:text-slate-100">{group.name}</td>
                                     <td className="p-3 text-sm text-gray-500 font-mono">{group.jid}</td>
                                     <td className="p-3 text-center">
                                         <button 

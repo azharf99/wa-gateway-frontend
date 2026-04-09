@@ -124,8 +124,8 @@ const ContactManager = () => {
 
     return (
         <div className="space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center">
                     <Users className="mr-2 text-blue-500 w-6 h-6" /> Manajemen Kontak & Siswa
                 </h2>
 
@@ -164,10 +164,10 @@ const ContactManager = () => {
                 </div>
 
                 {/* Tabel Data */}
-                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                <div className="overflow-x-auto border border-gray-200 dark:border-slate-800 rounded-lg">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 text-gray-700 text-sm border-b border-gray-200">
+                            <tr className="bg-gray-50 text-gray-700 text-sm border-b border-gray-200 dark:border-slate-800">
                                 <th className="p-4 font-semibold">Nama Lengkap</th>
                                 <th className="p-4 font-semibold">Nomor WhatsApp</th>
                                 <th className="p-4 font-semibold">Kategori</th>
@@ -182,7 +182,7 @@ const ContactManager = () => {
                             ) : (
                                 filteredContacts.map(c => (
                                     <tr key={c.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                        <td className="p-4 font-medium text-gray-800">{c.name}</td>
+                                        <td className="p-4 font-medium text-gray-800 dark:text-slate-100">{c.name}</td>
                                         <td className="p-4 text-gray-600 font-mono text-sm">{c.phone}</td>
                                         <td className="p-4">
                                             <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-medium">
@@ -216,9 +216,9 @@ const ContactManager = () => {
             {/* Modal Form CRUD */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-fade-in-up">
-                        <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50">
-                            <h3 className="font-bold text-lg text-gray-800">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-fade-in-up">
+                        <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50 dark:bg-slate-800">
+                            <h3 className="font-bold text-lg text-gray-800 dark:text-slate-100">
                                 {modalMode === 'add' ? 'Tambah Kontak Baru' : 'Edit Data Kontak'}
                             </h3>
                             <button onClick={closeModal} className="text-gray-400 hover:text-red-500 transition-colors">
@@ -250,7 +250,7 @@ const ContactManager = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
                                 <select 
-                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-900"
                                     value={formData.category}
                                     onChange={(e) => setFormData({...formData, category: e.target.value})}
                                 >

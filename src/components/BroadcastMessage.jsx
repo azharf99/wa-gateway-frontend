@@ -41,8 +41,8 @@ const BroadcastMessage = ({ deviceId }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-3xl">
-            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="mx-auto bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 max-w-3xl">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center">
                 <Megaphone className="mr-2 text-orange-500 w-5 h-5" /> Broadcast Massal (CSV)
             </h2>
 
@@ -63,7 +63,7 @@ const BroadcastMessage = ({ deviceId }) => {
                     <li>Baris pertama wajib berisi <strong>Nama Header</strong> (tanpa spasi lebih baik).</li>
                     <li>Gunakan <code>{`{{nama_header}}`}</code> di dalam template untuk memanggil data secara spesifik.</li>
                 </ul>
-                <div className="mt-3 p-2 bg-white border border-blue-100 rounded text-xs font-mono text-gray-600">
+                <div className="mt-3 p-2 bg-white dark:bg-slate-900 border border-blue-100 rounded text-xs font-mono text-gray-600">
                     nomor,nama,nilai_mtk,nilai_bahasa<br/>
                     6285701xxx,Budi Santoso,85,90<br/>
                     6281234xxx,Siti Aminah,92,88
@@ -71,10 +71,10 @@ const BroadcastMessage = ({ deviceId }) => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="border border-dashed border-orange-300 rounded-lg p-6 bg-orange-50/30 flex flex-col items-center justify-center">
+                <div className="border border-dashed border-orange-300 rounded-lg p-6 bg-orange-50 dark:bg-slate-800 flex flex-col items-center justify-center">
                     <FileSpreadsheet className="w-10 h-10 text-orange-400 mb-3" />
                     <label className="block text-sm font-medium text-orange-800 mb-2 cursor-pointer">
-                        <span className="bg-white border border-orange-300 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors">
+                        <span className="bg-white dark:bg-slate-900 border border-orange-300 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors">
                             Pilih File CSV (.csv)
                         </span>
                         <input 

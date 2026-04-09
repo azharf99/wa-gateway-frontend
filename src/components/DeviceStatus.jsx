@@ -79,8 +79,8 @@ const DeviceStatus = () => {
     }, [status]);
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center">
                 <Smartphone className="mr-2 text-blue-500" /> Pengaturan Perangkat
             </h2>
             
@@ -106,7 +106,7 @@ const DeviceStatus = () => {
                         <button 
                             onClick={checkStatusAndQR}
                             disabled={loading || disconnecting}
-                            className="flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="flex items-center justify-center px-4 py-2 bg-white dark:bg-slate-900 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                         >
                             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                             Refresh Status
@@ -128,13 +128,13 @@ const DeviceStatus = () => {
 
                 {/* Panel Kanan: Area QR Code */}
                 {status === 'disconnected' && (
-                    <div className="flex-1 bg-white rounded-xl p-6 border border-gray-200 flex flex-col items-center shadow-inner">
+                    <div className="flex-1 bg-white dark:bg-slate-900 rounded-xl p-6 border border-gray-200 dark:border-slate-800 flex flex-col items-center shadow-inner">
                         <div className="w-full flex items-center text-gray-600 mb-4 font-medium">
                             <QrCode className="w-5 h-5 mr-2" /> 
                             Tautkan Perangkat
                         </div>
                         
-                        <div className="bg-white p-4 rounded-xl border-2 border-dashed border-gray-300 flex justify-center items-center min-h-[250px] w-full">
+                        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-2 border-dashed border-gray-300 flex justify-center items-center min-h-[250px] w-full">
                             {qrCode ? (
                                 <QRCodeSVG value={qrCode} size={220} />
                             ) : (

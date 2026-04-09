@@ -60,13 +60,13 @@ const ApiKeyManager = () => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-3xl">
+        <div className="mx-auto bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 p-6 max-w-3xl">
             <div className="flex items-center mb-6">
                 <div className="bg-purple-100 p-3 rounded-lg mr-4">
                     <Key className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800">Manajemen API Key</h2>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100">Manajemen API Key</h2>
                     <p className="text-sm text-gray-500">Gunakan API Key ini untuk mengintegrasikan layanan backend lain ke WA Gateway tanpa perlu login.</p>
                 </div>
             </div>
@@ -87,7 +87,7 @@ const ApiKeyManager = () => {
                                 type="text"
                                 readOnly
                                 value={apiKey || 'Memuat...'}
-                                className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 font-mono text-sm focus:outline-none"
+                                className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 dark:border-slate-800 rounded-lg text-gray-600 font-mono text-sm focus:outline-none"
                             />
                         </div>
                         <button

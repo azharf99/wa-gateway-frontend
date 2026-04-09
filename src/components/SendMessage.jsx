@@ -75,8 +75,8 @@ const SendMessage = ({ deviceId }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
-            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="mx-auto bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center">
                 <Send className="mr-2 text-green-500 w-5 h-5" /> Kirim Pesan Langsung
             </h2>
 

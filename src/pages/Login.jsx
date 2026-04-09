@@ -31,12 +31,12 @@ const Login = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+            <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-lg w-full max-w-md">
                 <div className="flex flex-col items-center mb-8">
                     <div className="bg-green-500 p-3 rounded-full mb-4">
                         <MessageSquare className="text-white w-8 h-8" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-800">WA Gateway Admin</h1>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100">WA Gateway Admin</h1>
                     <p className="text-gray-500 text-sm mt-2">School Management System</p>
                 </div>
 

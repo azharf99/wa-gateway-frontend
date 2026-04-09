@@ -102,14 +102,14 @@ const AutoReplyManager = ({ deviceId }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <div className="flex items-center">
                     <div className="bg-blue-100 p-3 rounded-lg mr-4">
                         <MessageSquareQuote className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-gray-800">Auto Reply Manager</h2>
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100">Auto Reply Manager</h2>
                         <p className="text-sm text-gray-500">Kelola balasan otomatis berdasarkan keyword pesan masuk.</p>
                     </div>
                 </div>
@@ -188,9 +188,9 @@ const AutoReplyManager = ({ deviceId }) => {
             {/* Modal Form */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
                         <div className="px-6 py-4 border-b flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-gray-800">{isEditing ? 'Edit Auto Reply' : 'Tambah Auto Reply'}</h3>
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">{isEditing ? 'Edit Auto Reply' : 'Tambah Auto Reply'}</h3>
                             <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">&times;</button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6">

@@ -74,18 +74,18 @@ const DeviceManager = ({ devices, refreshDevices }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [qrCode.show, qrCode.deviceId]);
 
-    return (
+    return ( 
         <div className="space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100 flex items-center">
                         <Smartphone className="mr-2 text-indigo-500 w-6 h-6" /> Manajemen Device
                     </h2>
                     <form onSubmit={addDevice} className="flex gap-2 w-full sm:w-auto">
                         <input 
                             type="text" 
                             placeholder="Nama Device (ex: CS Utama)" 
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64"
+                            className="px-4 py-2 border border-gray-300 text-gray-800 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64"
                             value={newDeviceName}
                             onChange={(e) => setNewDeviceName(e.target.value)}
                         />
@@ -97,10 +97,10 @@ const DeviceManager = ({ devices, refreshDevices }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {devices.map(d => (
-                        <div key={d.id} className="border border-gray-200 rounded-xl p-5 relative bg-white hover:shadow-md transition-shadow flex flex-col">
+                        <div key={d.id} className="border border-gray-200 dark:border-slate-800 rounded-xl p-5 relative bg-white dark:bg-slate-900 hover:shadow-md transition-shadow flex flex-col">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <h3 className="font-bold text-lg text-gray-800">{d.name}</h3>
+                                    <h3 className="font-bold text-lg text-gray-800 dark:text-slate-100">{d.name}</h3>
                                     <p className="text-sm text-gray-500 font-mono mt-1">{d.phone || 'Menunggu scan QR...'}</p>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${
@@ -137,7 +137,7 @@ const DeviceManager = ({ devices, refreshDevices }) => {
                     ))}
                     
                     {devices.length === 0 && (
-                        <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-200 rounded-xl">
+                        <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-xl">
                             <Smartphone className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                             <h3 className="text-gray-500 font-medium">Belum ada device yang ditambahkan</h3>
                             <p className="text-gray-400 text-sm mt-1">Gunakan form di atas untuk membuat device pertama Anda.</p>
@@ -149,11 +149,11 @@ const DeviceManager = ({ devices, refreshDevices }) => {
             {/* MODAL SCAN QR */}
             {qrCode.show && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full">
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full">
                         <div className="bg-indigo-100 p-3 rounded-full mb-4">
                             <QrCode className="w-8 h-8 text-indigo-600" />
                         </div>
-                        <h3 className="font-bold text-xl text-gray-800 mb-1">Scan QR Code</h3>
+                        <h3 className="font-bold text-xl text-gray-800 dark:text-slate-100 mb-1">Scan QR Code</h3>
                         <p className="text-sm text-gray-500 text-center mb-6">Buka WhatsApp di HP Anda &rarr; Perangkat Tertaut &rarr; Tautkan Perangkat</p>
                         
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 w-full flex justify-center min-h-[260px]">
