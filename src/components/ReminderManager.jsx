@@ -18,6 +18,20 @@ const ReminderManager = ({ deviceId }) => {
     const [targetFilter, setTargetFilter] = useState('ALL'); // ALL, GRUP, PERSONAL
     const limit = 6; // Menampilkan 6 Kotak per halaman
 
+    const toDatetimeLocalValue = (value) => {
+        if (!value) return '';
+        const normalized = value.replace(' ', 'T');
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return '';
+        const pad = (num) => String(num).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    };
+
+    const toTimestampString = (value) => {
+        if (!value) return '';
+        return `${value.replace('T', ' ')}:00`;
+    };
+
     // DEBOUNCE SEARCH
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -65,10 +79,12 @@ const ReminderManager = ({ deviceId }) => {
                 is_group: data.is_group, 
                 message: data.message, 
                 interval_days: data.interval_days, 
-                next_run: data.next_run.substring(11, 16) // Ambil jam saja "HH:mm"
+                next_run: toDatetimeLocalValue(data.next_run)
             });
         } else {
-            setFormData({ id: null, to: '', is_group: false, message: '', interval_days: 1, next_run: '08:00' });
+            const now = new Date();
+            now.setHours(8, 0, 0, 0);
+            setFormData({ id: null, to: '', is_group: false, message: '', interval_days: 1, next_run: toDatetimeLocalValue(now.toISOString()) });
         }
         setIsModalOpen(true);
     };
@@ -85,7 +101,8 @@ const ReminderManager = ({ deviceId }) => {
             await axiosInstance.post(endpoint, {
                 ...formData,
                 device_id: parseInt(deviceId),
-                to: formattedTo
+                to: formattedTo,
+                next_run: toTimestampString(formData.next_run)
             });
             setIsModalOpen(false);
             fetchReminders();
@@ -193,10 +210,10 @@ const ReminderManager = ({ deviceId }) => {
                                         <button onClick={() => deleteReminder(r.id)} className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md"><Trash2 className="w-4 h-4" /></button>
                                     </div>
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 italic flex-grow">"{r.message}"</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 italic grow">"{r.message}"</p>
                                 <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700">
                                     <div className="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
-                                        <Clock className="w-3.5 h-3.5 mr-1.5" /> Tiap {r.interval_days} hr | {r.next_run?.substring(11, 16) || 'N/A'}
+                                        <Clock className="w-3.5 h-3.5 mr-1.5" /> Tiap {r.interval_days} hari | {r.next_run?.replace('T', ' ').substring(0, 16) || 'N/A'} WIB
                                     </div>
                                     <label className="flex items-center cursor-pointer">
                                         <div className="relative">
@@ -262,13 +279,13 @@ const ReminderManager = ({ deviceId }) => {
                                 </div>
                                 <div className="flex-1">
                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jam Eksekusi</label>
-                                    <input type="time" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.next_run} onChange={e => setFormData({...formData, next_run: e.target.value})} />
+                                    <input type="datetime-local" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.next_run} onChange={e => setFormData({...formData, next_run: e.target.value})} />
                                 </div>
                             </div>
                             {/* Input Pesan */}
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pesan (Gunakan {`{nama}`} untuk sapaan)</label>
-                                <textarea required rows="3" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
+                                <textarea required rows="9" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
                             </div>
                             <button type="submit" disabled={loading} className="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all mt-4">
                                 {loading ? 'Menyimpan...' : 'Simpan Pengingat'}
