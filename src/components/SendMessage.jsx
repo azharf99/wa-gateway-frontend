@@ -126,7 +126,7 @@ const SendMessage = ({ deviceId }) => {
                 </div>
 
                 <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <Paperclip className="w-4 h-4 mr-1" /> Lampirkan File (Opsional)
                     </label>
                     <input 

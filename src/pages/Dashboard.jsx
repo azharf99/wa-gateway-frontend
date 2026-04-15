@@ -135,13 +135,13 @@ const Dashboard = () => {
 
             {/* SIDEBAR: Konsisten di mode Terang (Putih) dan mode Gelap (Slate-900) */}
             <aside 
-                className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-2xl border-r border-slate-200 dark:border-slate-800 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-64 ${
+                className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-2xl border-r border-slate-200 dark:border-slate-800 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-64 ${
                     isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
                 <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
                     <div>
-                        <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-green-400 dark:to-emerald-500 flex items-center">
+                        <h1 className="text-xl font-black text-transparent bg-clip-text bg-linear-to-r from-emerald-500 to-teal-500 dark:from-green-400 dark:to-emerald-500 flex items-center">
                             <Smartphone className="mr-2 text-emerald-500 dark:text-green-400 w-6 h-6" /> WA Gateway
                         </h1>
                         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">azharfa.cloud • {user?.username}</p>
@@ -184,7 +184,7 @@ const Dashboard = () => {
             <main className="flex-1 flex flex-col w-full h-screen overflow-hidden">
                 
                 {/* HEADER: Beradaptasi dengan mode gelap */}
-                <header className="bg-white dark:bg-slate-900/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3 lg:py-4 flex items-center justify-between shadow-sm z-10 transition-colors duration-300">
+                <header className="bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3 lg:py-4 flex items-center justify-between shadow-sm z-10 transition-colors duration-300">
                     <div className="flex items-center gap-3">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)} 

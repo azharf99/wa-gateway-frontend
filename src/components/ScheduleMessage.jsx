@@ -260,7 +260,7 @@ const ScheduleMessage = ({ deviceId }) => {
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 italic flex-grow">
+                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 italic grow">
                                     {s.media_type ? <span className="font-semibold text-emerald-600 dark:text-emerald-400 not-italic mr-1">[{s.media_type}]</span> : ''} 
                                     "{s.message}"
                                 </p>
@@ -341,7 +341,7 @@ const ScheduleMessage = ({ deviceId }) => {
 
                             {modalMode === 'add' && (
                                 <div className="border border-dashed border-emerald-200 dark:border-emerald-800/50 rounded-lg p-3 bg-emerald-50/50 dark:bg-emerald-900/10">
-                                    <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 mb-2 flex items-center">
+                                    <label className="text-xs font-bold text-emerald-800 dark:text-emerald-400 mb-2 flex items-center">
                                         <Paperclip className="w-3.5 h-3.5 mr-1" /> Lampirkan File (Opsional)
                                     </label>
                                     <input type="file" onChange={handleFileChange} className="w-full text-xs text-emerald-600 dark:text-emerald-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-emerald-100 dark:file:bg-emerald-900/40 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-emerald-200 dark:hover:file:bg-emerald-900/60 transition-colors" />
