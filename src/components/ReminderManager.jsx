@@ -203,12 +203,14 @@ const ReminderManager = ({ deviceId }) => {
                                         <div className={`p-1.5 rounded-lg ${r.is_group ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'}`}>
                                             {r.is_group ? <Users className="w-4 h-4" /> : <User className="w-4 h-4" />}
                                         </div>
-                                        <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{r.to.split('@')[0]}</h3>
-                                        {r.target_name && (
-                                            <p className="text-[10px] text-slate-400 truncate max-w-[150px]">{r.target_name?.substring(0, 16)}...</p>
-                                        )}
+                                        <div className='flex flex-col'>
+                                            <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{r.to.split('@')[0]}</h3>
+                                            {r.target_name && (
+                                                <p className="text-xs text-slate-400 truncate max-w-[150px]">{r.target_name}</p>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 md:transition-opacity">
                                         <button onClick={() => openModal('edit', r)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-md"><Edit className="w-4 h-4" /></button>
                                         <button onClick={() => deleteReminder(r.id)} className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md"><Trash2 className="w-4 h-4" /></button>
                                     </div>
