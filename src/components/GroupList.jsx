@@ -61,7 +61,7 @@ const GroupList = ({ deviceId }) => {
                         ) : (
                             groups.map((group) => (
                                 <tr key={group.jid} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                    <td className="p-3 font-medium text-gray-800 dark:text-slate-100">{group.name}</td>
+                                    <td className="p-3 font-medium text-gray-600">{group.name}</td>
                                     <td className="p-3 text-sm text-gray-500 font-mono">{group.jid}</td>
                                     <td className="p-3 text-center">
                                         <button 

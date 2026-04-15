@@ -182,7 +182,7 @@ const ContactManager = () => {
                             ) : (
                                 filteredContacts.map(c => (
                                     <tr key={c.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                        <td className="p-4 font-medium text-gray-800 dark:text-slate-100">{c.name}</td>
+                                        <td className="p-4 font-medium text-gray-600">{c.name}</td>
                                         <td className="p-4 text-gray-600 font-mono text-sm">{c.phone}</td>
                                         <td className="p-4">
                                             <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-medium">
