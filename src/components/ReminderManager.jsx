@@ -204,8 +204,8 @@ const ReminderManager = ({ deviceId }) => {
                                             {r.is_group ? <Users className="w-4 h-4" /> : <User className="w-4 h-4" />}
                                         </div>
                                         <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{r.to.split('@')[0]}</h3>
-                                        {r.target_name && r.target_name !== r.to.split('@')[0] && (
-                                            <p className="text-[10px] text-slate-400 truncate max-w-[150px]">{r.to.split('@')[0]}</p>
+                                        {r.target_name && (
+                                            <p className="text-[10px] text-slate-400 truncate max-w-[150px]">{r.target_name?.substring(0, 16)}...</p>
                                         )}
                                     </div>
                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
