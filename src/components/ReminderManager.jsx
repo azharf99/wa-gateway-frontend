@@ -136,7 +136,7 @@ const ReminderManager = ({ deviceId }) => {
 
     const toggleStatus = async (reminder) => {
         try {
-            await axiosInstance.post('/reminders/update', {
+            await axiosInstance.put('/reminders/update', {
                 ...reminder,
                 is_active: !reminder.is_active
             });
