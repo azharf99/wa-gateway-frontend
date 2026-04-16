@@ -61,7 +61,7 @@ const ContactManager = () => {
                 await axiosInstance.post('/contacts/create', formData);
                 showAlert('success', 'Kontak berhasil ditambahkan.');
             } else {
-                await axiosInstance.put('/contacts/update', formData);
+                await axiosInstance.put(`/contacts/update/${formData.id}`, formData);
                 showAlert('success', 'Kontak berhasil diperbarui.');
             }
             closeModal();
