@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Send, Paperclip, AlertCircle, CheckCircle, Image, FileText, Video } from 'lucide-react';
 import axiosInstance from '../api/axios';
+import TargetSelectWithSearch from './TargetSelectWithSearch';
+import useContacts from '../hooks/useContacts';
 
 const SendMessage = ({ deviceId }) => {
     const [to, setTo] = useState('');
@@ -11,6 +13,7 @@ const SendMessage = ({ deviceId }) => {
     
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+    const { contacts, loadingContacts } = useContacts();
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -90,14 +93,13 @@ const SendMessage = ({ deviceId }) => {
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Tujuan / ID Grup</label>
-                        <input 
-                            type="text" 
-                            required
-                            placeholder="Contoh: 62812xxx atau ID-Grup"
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        <TargetSelectWithSearch
+                            label="Nomor Tujuan / ID Grup"
                             value={to}
-                            onChange={(e) => setTo(e.target.value)}
+                            onChange={setTo}
+                            contacts={contacts}
+                            loading={loadingContacts}
+                            placeholder="Ketik nomor/JID atau cari nama kontak..."
                         />
                     </div>
                     <div className="flex items-end pb-2">

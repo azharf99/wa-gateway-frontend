@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AlarmClock, Plus, Trash2, Edit, X, CheckCircle, Clock, Users, User, Search, Filter } from 'lucide-react';
 import axiosInstance from '../api/axios';
+import TargetSelectWithSearch from './TargetSelectWithSearch';
+import useContacts from '../hooks/useContacts';
 
 const ReminderManager = ({ deviceId }) => {
     const [reminders, setReminders] = useState([]);
@@ -17,6 +19,7 @@ const ReminderManager = ({ deviceId }) => {
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [targetFilter, setTargetFilter] = useState('ALL'); // ALL, GRUP, PERSONAL
     const limit = 6; // Menampilkan 6 Kotak per halaman
+    const { contacts, loadingContacts } = useContacts();
 
     const toDatetimeLocalValue = (value) => {
         if (!value) return '';
@@ -277,8 +280,12 @@ const ReminderManager = ({ deviceId }) => {
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             {/* Input Nomor */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tujuan (Nomor/JID)</label>
-                                <input type="text" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.to} onChange={e => setFormData({...formData, to: e.target.value})} />
+                                <TargetSelectWithSearch
+                                    value={formData.to}
+                                    onChange={(nextTo) => setFormData({ ...formData, to: nextTo })}
+                                    contacts={contacts}
+                                    loading={loadingContacts}
+                                />
                                 <label className="inline-flex items-center mt-2 cursor-pointer">
                                     <input type="checkbox" className="rounded text-emerald-600 mr-2" checked={formData.is_group} onChange={e => setFormData({...formData, is_group: e.target.checked})} />
                                     <span className="text-xs text-slate-600 dark:text-slate-400">Ini adalah Grup</span>
