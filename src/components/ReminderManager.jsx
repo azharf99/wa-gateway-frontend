@@ -9,7 +9,7 @@ const ReminderManager = ({ deviceId }) => {
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('add');
-    const [formData, setFormData] = useState({ id: null, to: '', is_group: false, message: '', interval_days: 1, next_run: '' });
+    const [formData, setFormData] = useState({ id: null, to: '', is_active: true, is_group: false, message: '', interval_days: 1, next_run: '' });
     
     // 🚨 STATE SERVER-SIDE PAGINATION & SEARCH
     const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +79,8 @@ const ReminderManager = ({ deviceId }) => {
             setFormData({ 
                 id: data.id, 
                 to: data.to, 
-                is_group: data.is_group, 
+                is_active : data.is_active,
+                is_group: data.is_group,
                 message: data.message, 
                 interval_days: data.interval_days, 
                 next_run: toDatetimeLocalValue(data.next_run)
@@ -87,7 +88,7 @@ const ReminderManager = ({ deviceId }) => {
         } else {
             const now = new Date();
             now.setHours(8, 0, 0, 0);
-            setFormData({ id: null, to: '', is_group: false, message: '', interval_days: 1, next_run: toDatetimeLocalValue(now.toISOString()) });
+            setFormData({ id: null, to: '', is_active: true, is_group: false, message: '', interval_days: 1, next_run: toDatetimeLocalValue(now.toISOString()) });
         }
         setIsModalOpen(true);
     };
