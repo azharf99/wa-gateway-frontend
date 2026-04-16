@@ -93,17 +93,25 @@ const ReminderManager = ({ deviceId }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const endpoint = modalMode === 'add' ? '/reminders/create' : '/reminders/update';
             let formattedTo = formData.to;
             if (formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@g.us`;
             else if(!formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@s.whatsapp.net`;
-
-            await axiosInstance.post(endpoint, {
-                ...formData,
-                device_id: parseInt(deviceId),
-                to: formattedTo,
-                next_run: toTimestampString(formData.next_run)
-            });
+            
+            if (modalMode == "add"){
+                await axiosInstance.post('/reminders/create', {
+                    ...formData,
+                    device_id: parseInt(deviceId),
+                    to: formattedTo,
+                    next_run: toTimestampString(formData.next_run)
+                });
+            } else{
+                await axiosInstance.put('/reminders/update', {
+                    ...formData,
+                    device_id: parseInt(deviceId),
+                    to: formattedTo,
+                    next_run: toTimestampString(formData.next_run)
+                });
+            }
             setIsModalOpen(false);
             fetchReminders();
         } catch (error) {
