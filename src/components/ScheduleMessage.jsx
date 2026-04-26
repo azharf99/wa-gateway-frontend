@@ -254,7 +254,12 @@ const ScheduleMessage = ({ deviceId }) => {
                                         <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${getStatusStyle(s.status)}`}>
                                             {s.status}
                                         </span>
-                                        <h3 className="font-bold text-slate-800 dark:text-slate-100 mt-2 line-clamp-1">{s.to.split('@')[0]}</h3>
+                                        <div className='flex flex-col'>
+                                            <h3 className="font-bold text-slate-800 dark:text-slate-100 mt-2 line-clamp-1">{s.to.split('@')[0]}</h3>
+                                            {s.target_name && (
+                                                <p className="text-xs text-slate-400 truncate max-w-[150px]">{s.target_name}</p>
+                                            )}
+                                        </div>
                                     </div>
                                     {s.status === 'PENDING' && (
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
