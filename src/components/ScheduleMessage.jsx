@@ -25,7 +25,7 @@ const ScheduleMessage = ({ deviceId }) => {
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, SENT, FAILED, PENDING
+    const [statusFilter, setStatusFilter] = useState('PENDING'); // ALL, SENT, FAILED, PENDING
     const limit = 6; // Menampilkan 6 Kotak per halaman
     const { contacts, loadingContacts } = useContacts();
 
