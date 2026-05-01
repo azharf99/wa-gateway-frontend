@@ -305,12 +305,12 @@ const ScheduleMessage = ({ deviceId }) => {
                                     </div>
                                     <div className="flex flex-col">
                                         <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-1">{s.to.split('@')[0]}</h3>
-                                        <p className="text-[10px] text-slate-400 font-mono">{s.to}</p>
+                                        <p className="text-[10px] text-slate-400 font-mono">{s.target_name}</p>
                                     </div>
                                 </div>
                                 <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 mb-4 grow border border-slate-100 dark:border-slate-700/50">
                                     <p className="text-xs text-slate-600 dark:text-slate-300 italic line-clamp-3">
-                                        {s.type === 'poll' ? `📊 Poll: ${s.poll_question}` : `"${s.message || 'Media Message'}"`}
+                                        {s.poll_options !== '' ? `📊 Poll: ${s.message}` : `"${s.message || 'Media Message'}"`}
                                     </p>
                                 </div>
                                 <div className="flex items-center text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-700">
