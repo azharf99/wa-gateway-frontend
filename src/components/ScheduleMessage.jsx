@@ -155,7 +155,7 @@ const ScheduleMessage = ({ deviceId }) => {
                     await axiosInstance.post('/schedule/media', uploadData, { headers: { 'Content-Type': 'multipart/form-data' }});
                 } else if (formData.type === 'poll') {
                     const validOptions = formData.poll_options.filter(o => o.trim() !== '');
-                    await axiosInstance.post('/api/schedule/poll', {
+                    await axiosInstance.post('/schedule/poll', {
                         device_id: parseInt(deviceId),
                         to: formattedTo,
                         question: formData.poll_question,
