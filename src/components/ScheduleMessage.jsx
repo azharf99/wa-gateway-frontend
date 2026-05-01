@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     CalendarClock, Plus, Trash2, Edit, X, CheckCircle, AlertCircle, 
     Clock, Paperclip, Image as ImageIcon, FileText, Video, 
-    Search, Filter, ChevronLeft, ChevronRight 
+    Search, Filter, ChevronLeft, ChevronRight, ListChecks, Users, User
 } from 'lucide-react';
 import axiosInstance from '../api/axios';
 import TargetSelectWithSearch from './TargetSelectWithSearch';
@@ -14,10 +14,31 @@ const ScheduleMessage = ({ deviceId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('add');
     
-    const [formData, setFormData] = useState({ id: null, to: '', is_group: false, message: '', run_at: '' });
+    const [formData, setFormData] = useState({ 
+        id: null, to: '', is_group: false, message: '', run_at: '', 
+        type: 'text', // text, media, poll
+        poll_question: '', poll_options: ['', ''], poll_max: 1
+    });
     const [file, setFile] = useState(null);
     const [mediaType, setMediaType] = useState('document');
     const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+
+    // Poll Helpers
+    const addPollOption = () => {
+        setFormData(prev => ({ ...prev, poll_options: [...prev.poll_options, ''] }));
+    };
+    const removePollOption = (idx) => {
+        if (formData.poll_options.length > 2) {
+            const newOpts = [...formData.poll_options];
+            newOpts.splice(idx, 1);
+            setFormData(prev => ({ ...prev, poll_options: newOpts }));
+        }
+    };
+    const updatePollOption = (idx, val) => {
+        const newOpts = [...formData.poll_options];
+        newOpts[idx] = val;
+        setFormData(prev => ({ ...prev, poll_options: newOpts }));
+    };
 
     // 🚨 STATE SERVER-SIDE PAGINATION, SEARCH, & FILTER
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,6 +99,7 @@ const ScheduleMessage = ({ deviceId }) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
         if (selectedFile) {
+            setFormData(prev => ({ ...prev, type: 'media' }));
             if (selectedFile.type.startsWith('image/')) setMediaType('image');
             else if (selectedFile.type.startsWith('video/')) setMediaType('video');
             else setMediaType('document');
@@ -93,11 +115,18 @@ const ScheduleMessage = ({ deviceId }) => {
                 id: data.id, 
                 to: data.to, 
                 is_group: data.is_group, 
-                message: data.message, 
-                run_at: formattedDate 
+                message: data.message || '', 
+                run_at: formattedDate,
+                type: data.type || 'text',
+                poll_question: data.poll_question || '',
+                poll_options: data.poll_options ? data.poll_options.split('|') : ['', ''],
+                poll_max: data.poll_max || 1
             });
         } else {
-            setFormData({ id: null, to: '', is_group: false, message: '', run_at: '' });
+            setFormData({ 
+                id: null, to: '', is_group: false, message: '', run_at: '', 
+                type: 'text', poll_question: '', poll_options: ['', ''], poll_max: 1 
+            });
         }
         setIsModalOpen(true);
     };
@@ -113,17 +142,27 @@ const ScheduleMessage = ({ deviceId }) => {
             else if(!formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@s.whatsapp.net`;
 
             if (modalMode === 'add') {
-                if (file) {
+                if (formData.type === 'media' && file) {
                     const uploadData = new FormData();
                     uploadData.append('device_id', deviceId);
                     uploadData.append('file', file);
-                    uploadData.append('to', formData.to);
+                    uploadData.append('to', formattedTo);
                     uploadData.append('is_group', formData.is_group);
                     uploadData.append('caption', formData.message);
                     uploadData.append('media_type', mediaType);
                     uploadData.append('run_at', formattedDate);
 
                     await axiosInstance.post('/schedule/media', uploadData, { headers: { 'Content-Type': 'multipart/form-data' }});
+                } else if (formData.type === 'poll') {
+                    const validOptions = formData.poll_options.filter(o => o.trim() !== '');
+                    await axiosInstance.post('/api/schedule/poll', {
+                        device_id: parseInt(deviceId),
+                        to: formattedTo,
+                        question: formData.poll_question,
+                        options: validOptions,
+                        max_selections: parseInt(formData.poll_max),
+                        run_at: formattedDate
+                    });
                 } else {
                     await axiosInstance.post('/schedule/message', {
                         device_id: parseInt(deviceId),
@@ -250,30 +289,33 @@ const ScheduleMessage = ({ deviceId }) => {
                         {schedules.map(s => (
                             <div key={s.id} className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:shadow-md transition-all bg-white dark:bg-slate-800 relative group flex flex-col">
                                 <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${getStatusStyle(s.status)}`}>
-                                            {s.status}
-                                        </span>
-                                        <div className='flex flex-col'>
-                                            <h3 className="font-bold text-slate-800 dark:text-slate-100 mt-2 line-clamp-1">{s.to.split('@')[0]}</h3>
-                                            {s.target_name && (
-                                                <p className="text-xs text-slate-400 truncate max-w-[150px]">{s.target_name}</p>
-                                            )}
-                                        </div>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase border ${getStatusStyle(s.status)}`}>
+                                        {s.status}
+                                    </span>
+                                    <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 md:transition-opacity">
+                                        {s.status === 'PENDING' && (
+                                            <button onClick={() => openModal('edit', s)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-md transition-colors"><Edit className="w-4 h-4" /></button>
+                                        )}
+                                        <button onClick={() => deleteSchedule(s.id)} className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-colors"><Trash2 className="w-4 h-4" /></button>
                                     </div>
-                                    {s.status === 'PENDING' && (
-                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => openModal('edit', s)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-md"><Edit className="w-4 h-4" /></button>
-                                            <button onClick={() => deleteSchedule(s.id)} className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md"><Trash2 className="w-4 h-4" /></button>
-                                        </div>
-                                    )}
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 italic grow">
-                                    {s.media_type ? <span className="font-semibold text-emerald-600 dark:text-emerald-400 not-italic mr-1">[{s.media_type}]</span> : ''} 
-                                    "{s.message}"
-                                </p>
-                                <div className="flex items-center pt-3 border-t border-slate-100 dark:border-slate-700 text-xs font-medium text-slate-500 dark:text-slate-400">
-                                    <Clock className="w-3.5 h-3.5 mr-1.5" /> Dijadwalkan: {s.run_at.substring(0, 16)}
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="p-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                                        {s.is_group ? <Users className="w-4 h-4 text-indigo-500" /> : <User className="w-4 h-4 text-emerald-500" />}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-1">{s.to.split('@')[0]}</h3>
+                                        <p className="text-[10px] text-slate-400 font-mono">{s.to}</p>
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 mb-4 grow border border-slate-100 dark:border-slate-700/50">
+                                    <p className="text-xs text-slate-600 dark:text-slate-300 italic line-clamp-3">
+                                        {s.type === 'poll' ? `📊 Poll: ${s.poll_question}` : `"${s.message || 'Media Message'}"`}
+                                    </p>
+                                </div>
+                                <div className="flex items-center text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-700">
+                                    <Clock className="w-3.5 h-3.5 mr-1.5 text-emerald-500" />
+                                    {s.run_at.replace('T', ' ').substring(0, 16)} WIB
                                 </div>
                             </div>
                         ))}
@@ -326,6 +368,27 @@ const ScheduleMessage = ({ deviceId }) => {
                             <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5 text-slate-400 hover:text-rose-500 transition-colors" /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                            {/* TAB TIPE PESAN (Hanya saat Add) */}
+                            {modalMode === 'add' && (
+                                <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1 mb-4">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, type: 'text' }))}
+                                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${formData.type === 'text' ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'text-slate-500'}`}
+                                    >Teks</button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, type: 'media' }))}
+                                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${formData.type === 'media' ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'text-slate-500'}`}
+                                    >Media</button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, type: 'poll' }))}
+                                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${formData.type === 'poll' ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'text-slate-500'}`}
+                                    >Poll</button>
+                                </div>
+                            )}
+
                             <div>
                                 <TargetSelectWithSearch
                                     value={formData.to}
@@ -339,23 +402,50 @@ const ScheduleMessage = ({ deviceId }) => {
                                     <span className="text-xs text-slate-600 dark:text-slate-400">Kirim ke Grup</span>
                                 </label>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Waktu Eksekusi</label>
-                                <input type="datetime-local" required className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-colors" 
-                                    value={formData.run_at} onChange={e => setFormData({...formData, run_at: e.target.value})} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pesan / Caption</label>
-                                <textarea required={!file} rows="3" className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none resize-none transition-colors" 
-                                    value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
-                            </div>
 
-                            {modalMode === 'add' && (
+                            {formData.type === 'poll' ? (
+                                <div className="space-y-3 bg-slate-50 dark:bg-slate-800/30 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Pertanyaan</label>
+                                        <input 
+                                            type="text" required
+                                            className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-emerald-500"
+                                            value={formData.poll_question}
+                                            onChange={(e) => setFormData({...formData, poll_question: e.target.value})}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Opsi</label>
+                                        {formData.poll_options.map((opt, idx) => (
+                                            <div key={idx} className="flex gap-2">
+                                                <input 
+                                                    type="text" required placeholder={`Opsi ${idx+1}`}
+                                                    className="flex-1 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100"
+                                                    value={opt}
+                                                    onChange={(e) => updatePollOption(idx, e.target.value)}
+                                                />
+                                                {formData.poll_options.length > 2 && (
+                                                    <button type="button" onClick={() => removePollOption(idx)} className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 className="w-4 h-4"/></button>
+                                                )}
+                                            </div>
+                                        ))}
+                                        <button type="button" onClick={addPollOption} className="w-full py-1.5 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg text-[10px] font-bold text-slate-400 hover:border-emerald-500 hover:text-emerald-500 transition-all uppercase">Tambah Opsi</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pesan / Caption</label>
+                                    <textarea required={formData.type === 'text'} rows="3" className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none resize-none transition-colors"
+                                        value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
+                                </div>
+                            )}
+
+                            {formData.type === 'media' && modalMode === 'add' && (
                                 <div className="border border-dashed border-emerald-200 dark:border-emerald-800/50 rounded-lg p-3 bg-emerald-50/50 dark:bg-emerald-900/10">
                                     <label className="text-xs font-bold text-emerald-800 dark:text-emerald-400 mb-2 flex items-center">
-                                        <Paperclip className="w-3.5 h-3.5 mr-1" /> Lampirkan File (Opsional)
+                                        <Paperclip className="w-3.5 h-3.5 mr-1" /> Lampirkan File
                                     </label>
-                                    <input type="file" onChange={handleFileChange} className="w-full text-xs text-emerald-600 dark:text-emerald-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-emerald-100 dark:file:bg-emerald-900/40 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-emerald-200 dark:hover:file:bg-emerald-900/60 transition-colors" />
+                                    <input type="file" required onChange={handleFileChange} className="w-full text-xs text-emerald-600 dark:text-emerald-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-emerald-100 dark:file:bg-emerald-900/40 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-emerald-200 dark:hover:file:bg-emerald-900/60 transition-colors" />
                                     {file && (
                                         <div className="mt-3 flex gap-3 text-xs text-slate-700 dark:text-slate-300">
                                             <label className="flex items-center space-x-1 cursor-pointer"><input type="radio" className="text-emerald-600 focus:ring-emerald-500" value="document" checked={mediaType === 'document'} onChange={e => setMediaType(e.target.value)} /><FileText className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 ml-1" /> <span>Dokumen</span></label>
@@ -365,6 +455,12 @@ const ScheduleMessage = ({ deviceId }) => {
                                     )}
                                 </div>
                             )}
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Waktu Eksekusi</label>
+                                <input type="datetime-local" required className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none transition-colors" 
+                                    value={formData.run_at} onChange={e => setFormData({...formData, run_at: e.target.value})} />
+                            </div>
 
                             <button type="submit" disabled={loading} className="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/30 transition-all mt-4 disabled:opacity-70 disabled:cursor-wait">
                                 {loading ? 'Menyimpan...' : 'Simpan Jadwal'}

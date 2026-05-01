@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlarmClock, Plus, Trash2, Edit, X, CheckCircle, Clock, Users, User, Search, Filter } from 'lucide-react';
+import { AlarmClock, Plus, Trash2, Edit, X, CheckCircle, Clock, Users, User, Search, Filter, ListChecks } from 'lucide-react';
 import axiosInstance from '../api/axios';
 import TargetSelectWithSearch from './TargetSelectWithSearch';
 import useContacts from '../hooks/useContacts';
@@ -9,7 +9,11 @@ const ReminderManager = ({ deviceId }) => {
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('add');
-    const [formData, setFormData] = useState({ id: null, to: '', is_active: true, is_group: false, message: '', interval_days: 1, next_run: '' });
+    const [formData, setFormData] = useState({ 
+        id: null, to: '', is_active: true, is_group: false, message: '', 
+        interval_days: 1, next_run: '',
+        message_type: 'text', poll_options: '', poll_max_selections: 1
+    });
     
     // 🚨 STATE SERVER-SIDE PAGINATION & SEARCH
     const [currentPage, setCurrentPage] = useState(1);
@@ -83,12 +87,19 @@ const ReminderManager = ({ deviceId }) => {
                 is_group: data.is_group,
                 message: data.message, 
                 interval_days: data.interval_days, 
-                next_run: toDatetimeLocalValue(data.next_run)
+                next_run: toDatetimeLocalValue(data.next_run),
+                message_type: data.message_type || 'text',
+                poll_options: data.poll_options || '',
+                poll_max_selections: data.poll_max_selections || 1
             });
         } else {
             const now = new Date();
             now.setHours(8, 0, 0, 0);
-            setFormData({ id: null, to: '', is_active: true, is_group: false, message: '', interval_days: 1, next_run: toDatetimeLocalValue(now.toISOString()) });
+            setFormData({ 
+                id: null, to: '', is_active: true, is_group: false, message: '', 
+                interval_days: 1, next_run: toDatetimeLocalValue(now.toISOString()),
+                message_type: 'text', poll_options: '', poll_max_selections: 1
+            });
         }
         setIsModalOpen(true);
     };
@@ -101,20 +112,18 @@ const ReminderManager = ({ deviceId }) => {
             if (formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@g.us`;
             else if(!formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@s.whatsapp.net`;
             
+            const payload = {
+                ...formData,
+                device_id: parseInt(deviceId),
+                to: formattedTo,
+                next_run: toTimestampString(formData.next_run),
+                poll_max_selections: parseInt(formData.poll_max_selections)
+            };
+
             if (modalMode == "add"){
-                await axiosInstance.post('/reminders/create', {
-                    ...formData,
-                    device_id: parseInt(deviceId),
-                    to: formattedTo,
-                    next_run: toTimestampString(formData.next_run)
-                });
+                await axiosInstance.post('/reminders/create', payload);
             } else{
-                await axiosInstance.put('/reminders/update', {
-                    ...formData,
-                    device_id: parseInt(deviceId),
-                    to: formattedTo,
-                    next_run: toTimestampString(formData.next_run)
-                });
+                await axiosInstance.put('/reminders/update', payload);
             }
             setIsModalOpen(false);
             fetchReminders();
@@ -227,7 +236,11 @@ const ReminderManager = ({ deviceId }) => {
                                         <button onClick={() => deleteReminder(r.id)} className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md"><Trash2 className="w-4 h-4" /></button>
                                     </div>
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 italic grow">"{r.message}"</p>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 mb-4 grow border border-slate-100 dark:border-slate-700/50">
+                                    <p className="text-sm text-slate-600 dark:text-slate-300 italic line-clamp-2">
+                                        {r.message_type === 'poll' ? `📊 Poll: ${r.message}` : `"${r.message}"`}
+                                    </p>
+                                </div>
                                 <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700">
                                     <div className="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
                                         <Clock className="w-3.5 h-3.5 mr-1.5" /> Tiap {r.interval_days} hari | {r.next_run?.replace('T', ' ').substring(0, 16) || 'N/A'} WIB
@@ -279,6 +292,19 @@ const ReminderManager = ({ deviceId }) => {
                             <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5 text-slate-400" /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            {/* TIPE PESAN */}
+                            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1">
+                                <button 
+                                    type="button"
+                                    onClick={() => setFormData({...formData, message_type: 'text'})}
+                                    className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${formData.message_type === 'text' ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'text-slate-500'}`}
+                                >Pesan Teks</button>
+                                <button 
+                                    type="button"
+                                    onClick={() => setFormData({...formData, message_type: 'poll'})}
+                                    className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${formData.message_type === 'poll' ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm' : 'text-slate-500'}`}
+                                >Poll (Voting)</button>
+                            </div>
                             {/* Input Nomor */}
                             <div>
                                 <TargetSelectWithSearch
@@ -305,9 +331,26 @@ const ReminderManager = ({ deviceId }) => {
                             </div>
                             {/* Input Pesan */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pesan (Gunakan {`{nama}`} untuk sapaan)</label>
-                                <textarea required rows="9" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                    {formData.message_type === 'poll' ? 'Pertanyaan Poll' : 'Pesan Pengingat'}
+                                </label>
+                                <textarea required rows={formData.message_type === 'poll' ? "2" : "9"} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
                             </div>
+                            {/* Input Poll Options */}
+                            {formData.message_type === 'poll' && (
+                                <div className="space-y-3 bg-slate-50 dark:bg-slate-800/30 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Opsi Poll (Pisahkan dengan | )</label>
+                                        <input type="text" required placeholder="Ya|Tidak|Mungkin" className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100"
+                                            value={formData.poll_options} onChange={e => setFormData({...formData, poll_options: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Maks Pilihan</label>
+                                        <input type="number" min="1" className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100"
+                                            value={formData.poll_max_selections} onChange={e => setFormData({...formData, poll_max_selections: e.target.value})} />
+                                    </div>
+                                </div>
+                            )}
                             <button type="submit" disabled={loading} className="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all mt-4">
                                 {loading ? 'Menyimpan...' : 'Simpan Pengingat'}
                             </button>
