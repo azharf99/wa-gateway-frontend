@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
     LogOut, Smartphone, Users, Send, Contact, User, Key, 
     AlarmClock, CalendarClock, Megaphone, Menu, MessageSquareQuote, 
-    History, X, ShieldCheck, Sun, Moon // 🚨 Tambahkan Sun dan Moon
+    History, X, ShieldCheck, Sun, Moon, Activity // 🚨 Tambahkan Sun, Moon, Activity
 } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
@@ -35,6 +35,48 @@ const Dashboard = () => {
         // Cek apakah user sebelumnya sudah memilih dark mode
         return localStorage.getItem('theme') === 'dark';
     });
+
+    // ==========================================
+    // 🌐 STATE & LOGIC CONNECTION HEALTH CHECK
+    // ==========================================
+    const [networkStatus, setNetworkStatus] = useState({
+        isOnline: true,
+        latency: '...',
+        message: 'Mengecek jaringan...',
+        lastChecked: null
+    });
+
+    const checkNetworkHealth = async () => {
+        try {
+            // Menggunakan /api/system/network sesuai instruksi
+            const res = await axiosInstance.get('/system/network'); 
+            const { status, message, data } = res.data;
+            
+            setNetworkStatus({
+                isOnline: data?.is_online ?? (status === 'success'),
+                latency: data?.latency || '0ms',
+                message: message || 'Jaringan Normal',
+                lastChecked: new Date().toLocaleTimeString()
+            });
+        } catch (error) {
+            setNetworkStatus({
+                isOnline: false,
+                latency: 'Timeout',
+                message: error.response?.data?.message || 'Gagal terhubung ke server',
+                lastChecked: new Date().toLocaleTimeString()
+            });
+        }
+    };
+
+    useEffect(() => {
+        // Jalankan saat mount
+        checkNetworkHealth();
+        
+        // Interval 5 menit (300.000 ms) untuk mencegah overload server
+        const networkInterval = setInterval(checkNetworkHealth, 300000);
+        
+        return () => clearInterval(networkInterval);
+    }, []);
 
     useEffect(() => {
         // Suntikkan atau cabut class 'dark' di elemen paling akar (HTML)
@@ -198,7 +240,23 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-                        {/* 🌙 SAKLAR TOGGLE DARK MODE */}
+                        {/* � CONNECTION HEALTH INDICATOR */}
+                        <div 
+                            className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all duration-300 ${
+                                networkStatus.isOnline 
+                                    ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30 text-emerald-700 dark:text-emerald-400' 
+                                    : 'bg-rose-50 dark:bg-rose-900/10 border-rose-100 dark:border-rose-800/30 text-rose-700 dark:text-rose-400'
+                            }`}
+                            title={`${networkStatus.message} (${networkStatus.lastChecked})`}
+                        >
+                            <Activity className={`w-4 h-4 ${networkStatus.isOnline ? 'animate-pulse' : ''}`} />
+                            <div className="flex flex-col items-start leading-none">
+                                <span className="text-[10px] font-black uppercase tracking-wider opacity-70">VPS Health</span>
+                                <span className="text-xs font-bold">{networkStatus.latency}</span>
+                            </div>
+                        </div>
+
+                        {/* �🌙 SAKLAR TOGGLE DARK MODE */}
                         <button
                             onClick={() => setIsDarkMode(!isDarkMode)}
                             className="p-2 rounded-xl text-slate-500 bg-slate-100 hover:bg-slate-200 dark:text-amber-400 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all duration-300"
