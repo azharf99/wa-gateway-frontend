@@ -3,6 +3,7 @@ import { AlarmClock, Plus, Trash2, Edit, X, CheckCircle, Clock, Users, User, Sea
 import axiosInstance from '../api/axios';
 import TargetSelectWithSearch from './TargetSelectWithSearch';
 import useContacts from '../hooks/useContacts';
+import { formatWhatsAppNumber } from '../utils/helpers';
 
 const ReminderManager = ({ deviceId }) => {
     const [reminders, setReminders] = useState([]);
@@ -108,9 +109,14 @@ const ReminderManager = ({ deviceId }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            let formattedTo = formData.to;
-            if (formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@g.us`;
-            else if(!formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@s.whatsapp.net`;
+            // Normalisasi nomor tujuan
+            let formattedTo = formatWhatsAppNumber(formData.to, formData.is_group);
+            
+            if (formData.is_group && !formattedTo.includes('@')) {
+                formattedTo = `${formattedTo}@g.us`;
+            } else if(!formData.is_group && !formattedTo.includes('@')) {
+                formattedTo = `${formattedTo}@s.whatsapp.net`;
+            }
             
             const payload = {
                 ...formData,

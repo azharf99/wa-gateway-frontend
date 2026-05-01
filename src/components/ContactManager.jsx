@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, FileUp, Search, Edit, X, CheckCircle, AlertCircle } from 'lucide-react';
 import axiosInstance from '../api/axios';
+import { formatWhatsAppNumber } from '../utils/helpers';
 
 const ContactManager = () => {
     const [contacts, setContacts] = useState([]);
@@ -57,11 +58,17 @@ const ContactManager = () => {
         e.preventDefault();
         setLoading(true);
         try {
+            // Normalisasi nomor sebelum disimpan
+            const payload = {
+                ...formData,
+                phone: formatWhatsAppNumber(formData.phone)
+            };
+
             if (modalMode === 'add') {
-                await axiosInstance.post('/contacts/create', formData);
+                await axiosInstance.post('/contacts/create', payload);
                 showAlert('success', 'Kontak berhasil ditambahkan.');
             } else {
-                await axiosInstance.put(`/contacts/update/${formData.id}`, formData);
+                await axiosInstance.put(`/contacts/update/${formData.id}`, payload);
                 showAlert('success', 'Kontak berhasil diperbarui.');
             }
             closeModal();
@@ -88,6 +95,39 @@ const ContactManager = () => {
 
     // --- FUNGSI IMPOR CSV ---
 
+    const processCSV = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/);
+                    if (lines.length < 2) return resolve(file);
+
+                    const header = lines[0];
+                    const cleanedLines = [header];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        const columns = lines[i].split(',');
+                        if (columns.length > 1) {
+                            // Asumsi format: nama, phone, category (phone di kolom index 1)
+                            columns[1] = formatWhatsAppNumber(columns[1]);
+                        }
+                        cleanedLines.push(columns.join(','));
+                    }
+
+                    const cleanedBlob = new Blob([cleanedLines.join('\n')], { type: 'text/csv' });
+                    resolve(new File([cleanedBlob], file.name, { type: 'text/csv' }));
+                } catch (err) {
+                    resolve(file);
+                }
+            };
+            reader.onerror = () => resolve(file);
+            reader.readAsText(file);
+        });
+    };
+
     const handleImport = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -98,11 +138,12 @@ const ContactManager = () => {
             return;
         }
 
-        const importData = new FormData();
-        importData.append('file', file);
-
         setLoading(true);
         try {
+            const cleanedFile = await processCSV(file);
+            const importData = new FormData();
+            importData.append('file', cleanedFile);
+
             const res = await axiosInstance.post('/contacts/import', importData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -244,7 +285,7 @@ const ContactManager = () => {
                                     required 
                                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     value={formData.phone}
-                                    onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, '')})} // Hanya angka
+                                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
                                 />
                             </div>
                             <div>

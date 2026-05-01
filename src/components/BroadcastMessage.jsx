@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Megaphone, FileSpreadsheet, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { Megaphone, FileSpreadsheet, CheckCircle, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import axiosInstance from '../api/axios';
+import { formatWhatsAppNumber } from '../utils/helpers';
 
 const BroadcastMessage = ({ deviceId }) => {
     const [file, setFile] = useState(null);
@@ -8,6 +9,46 @@ const BroadcastMessage = ({ deviceId }) => {
     
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ show: false, type: '', text: '' });
+
+    const processCSV = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/);
+                    if (lines.length < 2) {
+                        resolve(file); // Kembalikan file asli jika kosong atau hanya header
+                        return;
+                    }
+
+                    const header = lines[0];
+                    const cleanedLines = [header];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        if (!lines[i].trim()) continue;
+                        
+                        const columns = lines[i].split(',');
+                        if (columns.length > 0) {
+                            // Bersihkan kolom pertama (nomor WA)
+                            columns[0] = formatWhatsAppNumber(columns[0]);
+                        }
+                        cleanedLines.push(columns.join(','));
+                    }
+
+                    const cleanedText = cleanedLines.join('\n');
+                    const cleanedBlob = new Blob([cleanedText], { type: 'text/csv' });
+                    const cleanedFile = new File([cleanedBlob], file.name, { type: 'text/csv' });
+                    resolve(cleanedFile);
+                } catch (err) {
+                    console.error("Gagal membersihkan CSV:", err);
+                    resolve(file); // Fallback ke file asli jika gagal
+                }
+            };
+            reader.onerror = () => resolve(file);
+            reader.readAsText(file);
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,12 +61,15 @@ const BroadcastMessage = ({ deviceId }) => {
         setLoading(true);
         setAlert({ show: false, type: '', text: '' });
 
-        const formData = new FormData();
-        formData.append('device_id', parseInt(deviceId));
-        formData.append('file', file);
-        formData.append('message_template', template);
-
         try {
+            // Bersihkan nomor di dalam CSV sebelum dikirim
+            const cleanedFile = await processCSV(file);
+
+            const formData = new FormData();
+            formData.append('device_id', parseInt(deviceId));
+            formData.append('file', cleanedFile);
+            formData.append('message_template', template);
+
             const res = await axiosInstance.post('/whatsapp/broadcast', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });

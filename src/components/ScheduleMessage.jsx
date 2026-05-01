@@ -7,6 +7,7 @@ import {
 import axiosInstance from '../api/axios';
 import TargetSelectWithSearch from './TargetSelectWithSearch';
 import useContacts from '../hooks/useContacts';
+import { formatWhatsAppNumber } from '../utils/helpers';
 
 const ScheduleMessage = ({ deviceId }) => {
     const [schedules, setSchedules] = useState([]);
@@ -137,9 +138,15 @@ const ScheduleMessage = ({ deviceId }) => {
 
         try {
             const formattedDate = formData.run_at.replace('T', ' ') + ':00';
-            let formattedTo = formData.to;
-            if (formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@g.us`;
-            else if(!formData.is_group && !formData.to.includes('@')) formattedTo = `${formData.to}@s.whatsapp.net`;
+            
+            // Normalisasi nomor tujuan
+            let formattedTo = formatWhatsAppNumber(formData.to, formData.is_group);
+            
+            if (formData.is_group && !formattedTo.includes('@')) {
+                formattedTo = `${formattedTo}@g.us`;
+            } else if(!formData.is_group && !formattedTo.includes('@')) {
+                formattedTo = `${formattedTo}@s.whatsapp.net`;
+            }
 
             if (modalMode === 'add') {
                 if (formData.type === 'media' && file) {

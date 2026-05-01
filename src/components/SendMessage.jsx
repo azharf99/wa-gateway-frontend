@@ -3,6 +3,7 @@ import { Send, Paperclip, AlertCircle, CheckCircle, Image, FileText, Video, List
 import axiosInstance from '../api/axios';
 import TargetSelectWithSearch from './TargetSelectWithSearch';
 import useContacts from '../hooks/useContacts';
+import { formatWhatsAppNumber } from '../utils/helpers';
 
 const SendMessage = ({ deviceId }) => {
     const [to, setTo] = useState('');
@@ -53,11 +54,13 @@ const SendMessage = ({ deviceId }) => {
         setAlert({ show: false, type: '', text: '' });
 
         try {
-            let formattedTo = to;
-            if (isGroup && !to.includes('@')) {
-                formattedTo = `${to}@g.us`;
-            } else if(!isGroup && !to.includes('@')){
-                formattedTo = `${to}@s.whatsapp.net`;
+            // Normalisasi nomor tujuan sebelum dikirim
+            let formattedTo = formatWhatsAppNumber(to, isGroup);
+            
+            if (isGroup && !formattedTo.includes('@')) {
+                formattedTo = `${formattedTo}@g.us`;
+            } else if(!isGroup && !formattedTo.includes('@')){
+                formattedTo = `${formattedTo}@s.whatsapp.net`;
             }
 
             if (messageType === 'media' && file) {
