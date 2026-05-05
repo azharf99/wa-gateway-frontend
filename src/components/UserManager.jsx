@@ -40,8 +40,9 @@ const UserManager = () => {
             const response = await axiosInstance.get('/users/', {
                 params: { page, limit: pagination.limit, search }
             });
-            const { data, total, total_pages } = response.data;
-            setUsers(data || []);
+            // Mengambil data dari response.data.data (struktur nested)
+            const { data: userList, total, total_pages } = response.data.data;
+            setUsers(userList || []);
             setPagination(prev => ({ 
                 ...prev, 
                 page, 
@@ -66,7 +67,7 @@ const UserManager = () => {
         if (user) {
             setIsEditing(true);
             setFormData({
-                id: user.id,
+                id: user.ID, // Menggunakan ID (uppercase) sesuai GORM
                 username: user.username,
                 email: user.email,
                 password: '', // Jangan isi password saat edit kecuali ingin ganti
@@ -185,7 +186,7 @@ const UserManager = () => {
                         </thead>
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                             {users.length > 0 ? users.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                                <tr key={user.ID} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-200 dark:border-slate-700">
@@ -194,7 +195,7 @@ const UserManager = () => {
                                             <div>
                                                 <div className="font-bold text-slate-800 dark:text-slate-100">{user.username}</div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                                                    <Mail size={12} /> {user.email}
+                                                    <Mail size={12} /> {user.email || '(Tidak ada email)'}
                                                 </div>
                                             </div>
                                         </div>
@@ -218,7 +219,7 @@ const UserManager = () => {
                                             <Edit size={20} />
                                         </button>
                                         <button 
-                                            onClick={() => handleDelete(user.id, user.username)}
+                                            onClick={() => handleDelete(user.ID, user.username)}
                                             className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all"
                                             title="Delete User"
                                         >
