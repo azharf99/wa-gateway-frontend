@@ -6,7 +6,7 @@ import PasswordInput from './PasswordInput';
 
 const AccountSettings = () => {
     const { user: authUser } = useContext(AuthContext);
-    const [profile, setProfile] = useState(null);
+    const [profile, setProfile] = useState(authUser); // Gunakan data dari context sebagai awal
     const [formData, setFormData] = useState({
         old_password: '',
         new_password: '',

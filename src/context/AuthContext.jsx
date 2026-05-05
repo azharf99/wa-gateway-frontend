@@ -53,7 +53,12 @@ export const AuthProvider = ({ children }) => {
     const login = async (identifier, password, recaptcha_token) => {
         try {
             const res = await axiosInstance.post('/auth/login', { identifier, password, recaptcha_token });
-            updateToken(res.data.data.access_token);
+            const { access_token, user: userData } = res.data.data;
+            
+            setTokenState(access_token);
+            setAccessToken(access_token);
+            setUser(userData); // Gunakan data user langsung dari response
+            
             return { success: true };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Koneksi ke server gagal' };
@@ -63,10 +68,19 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const res = await axiosInstance.post('/auth/register', userData);
-            // Registration might log the user in automatically or require manual login
-            // Assuming backend returns token on success or user needs to login
-            if (res.data.data?.access_token) {
-                updateToken(res.data.data.access_token);
+            const data = res.data.data;
+            
+            if (data?.access_token) {
+                setTokenState(data.access_token);
+                setAccessToken(data.access_token);
+                if (data.user) {
+                    setUser(data.user);
+                } else {
+                    try {
+                        const decoded = jwtDecode(data.access_token);
+                        setUser(decoded);
+                    } catch (e) {}
+                }
             }
             return { success: true, message: res.data.message };
         } catch (error) {
@@ -77,7 +91,12 @@ export const AuthProvider = ({ children }) => {
     const googleLogin = async (googleToken) => {
         try {
             const res = await axiosInstance.post('/auth/google', { token: googleToken });
-            updateToken(res.data.data.access_token);
+            const { access_token, user: userData } = res.data.data;
+            
+            setTokenState(access_token);
+            setAccessToken(access_token);
+            setUser(userData); // Gunakan data user langsung dari response
+            
             return { success: true };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Google Login gagal' };
