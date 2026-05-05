@@ -14,8 +14,14 @@ function App() {
     const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
     // Log for debugging (will show in browser console)
-    console.log("RECAPTCHA_SITE_KEY:", recaptchaSiteKey ? "Loaded" : "Missing");
-    console.log("GOOGLE_CLIENT_ID:", googleClientId ? "Loaded" : "Missing");
+    console.log("Environment Status:", {
+        google: googleClientId ? "Configured" : "MISSING",
+        recaptcha: recaptchaSiteKey ? "Configured" : "MISSING"
+    });
+
+    if (!googleClientId) {
+        console.warn("CRITICAL: VITE_GOOGLE_CLIENT_ID is not defined in .env file!");
+    }
 
     return (
         <GoogleOAuthProvider clientId={googleClientId || ""}>

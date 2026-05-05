@@ -15,6 +15,7 @@ const Login = () => {
     const { login, googleLogin } = useContext(AuthContext);
     const navigate = useNavigate();
     const { executeRecaptcha } = useGoogleReCaptcha();
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -128,8 +129,12 @@ const Login = () => {
                             <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
                         </div>
 
-                        <div className="flex justify-center w-full">
+                        <div className="flex flex-col items-center w-full gap-2">
+                            {!googleClientId && (
+                                <p className="text-xs text-rose-500 font-medium">Google Client ID belum dikonfigurasi di .env</p>
+                            )}
                             <GoogleLogin
+                                clientId={googleClientId}
                                 onSuccess={handleGoogleSuccess}
                                 onError={() => setError('Google Login gagal dimuat')}
                                 useOneTap
