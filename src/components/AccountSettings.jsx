@@ -21,6 +21,8 @@ const AccountSettings = () => {
     };
 
     const fetchProfile = async () => {
+        if (!authUser?.id) return; // Jangan panggil jika ID belum ada
+        
         try {
             const res = await axiosInstance.get(`/auth/user/${authUser.id}`);
             setProfile(res.data.data);
@@ -30,8 +32,10 @@ const AccountSettings = () => {
     };
 
     useEffect(() => {
-        fetchProfile();
-    }, []);
+        if (authUser?.id) {
+            fetchProfile();
+        }
+    }, [authUser?.id]); // Refetch jika ID berubah atau tersedia
 
     const handleSubmit = async (e) => {
         e.preventDefault();

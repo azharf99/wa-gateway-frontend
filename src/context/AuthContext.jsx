@@ -16,7 +16,12 @@ export const AuthProvider = ({ children }) => {
         if (newToken) {
             try {
                 const decoded = jwtDecode(newToken);
-                setUser(decoded);
+                // Normalisasi data user agar selalu punya field .id
+                const normalizedUser = {
+                    ...decoded,
+                    id: decoded.id || decoded.user_id || decoded.sub,
+                };
+                setUser(normalizedUser);
             } catch (error) {
                 console.error("Gagal mendecode token", error);
                 setUser(null);
