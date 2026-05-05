@@ -50,9 +50,9 @@ export const AuthProvider = ({ children }) => {
         checkSession();
     }, []);
 
-    const login = async (identifier, password) => {
+    const login = async (identifier, password, recaptcha_token) => {
         try {
-            const res = await axiosInstance.post('/auth/login', { identifier, password });
+            const res = await axiosInstance.post('/auth/login', { identifier, password, recaptcha_token });
             updateToken(res.data.data.access_token);
             return { success: true };
         } catch (error) {

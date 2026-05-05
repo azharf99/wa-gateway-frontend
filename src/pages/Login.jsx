@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { LogIn, User, AlertCircle, ArrowRight } from 'lucide-react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import PasswordInput from '../components/PasswordInput';
 
 const Login = () => {
@@ -13,17 +14,30 @@ const Login = () => {
     
     const { login, googleLogin } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setError('');
-        
-        const result = await login(identifier, password);
-        if (result.success) {
-            navigate('/');
-        } else {
-            setError(result.message);
+        setLoading(true);
+
+        if (!executeRecaptcha) {
+            setError('reCAPTCHA belum siap. Silakan coba lagi.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const recaptchaToken = await executeRecaptcha('login');
+            const result = await login(identifier, password, recaptchaToken);
+            if (result.success) {
+                navigate('/');
+            } else {
+                setError(result.message);
+                setLoading(false);
+            }
+        } catch (err) {
+            setError('Gagal memverifikasi keamanan (reCAPTCHA)');
             setLoading(false);
         }
     };
@@ -131,7 +145,7 @@ const Login = () => {
                             Belum punya akun?{' '}
                             <Link to="/register" className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
                                 Daftar Sekarang
-                            </Link>
+                              </Link>
                         </p>
                     </div>
                 </div>
@@ -140,4 +154,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Login;
