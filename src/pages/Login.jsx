@@ -1,81 +1,140 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom'; // 1. Tambahkan import Navigate
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { MessageSquare } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+import { LogIn, User, AlertCircle, ArrowRight } from 'lucide-react';
 import PasswordInput from '../components/PasswordInput';
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [identifier, setIdentifier] = useState(''); // Bisa username atau email
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     
-    // 2. Ekstrak 'token' dari AuthContext
-    const { login, loading, token } = useContext(AuthContext);
+    const { login, googleLogin } = useContext(AuthContext);
     const navigate = useNavigate();
-
-    // 3. Pengecekan status login: Jika punya token, tendang kembali ke Dashboard
-    if (token) {
-        return <Navigate to="/" replace />;
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         setError('');
         
-        const res = await login(username, password);
-        if (res.success) {
+        const result = await login(identifier, password);
+        if (result.success) {
             navigate('/');
         } else {
-            setError(res.message);
+            setError(result.message);
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setLoading(true);
+        const result = await googleLogin(credentialResponse.credential);
+        if (result.success) {
+            navigate('/');
+        } else {
+            setError(result.message);
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-lg w-full max-w-md">
-                <div className="flex flex-col items-center mb-8">
-                    <div className="bg-green-500 p-3 rounded-full mb-4">
-                        <MessageSquare className="text-white w-8 h-8" />
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 transition-colors duration-500">
+            <div className="max-w-md w-full">
+                {/* Header Area */}
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-4 shadow-sm">
+                        <LogIn size={32} />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100">WA Gateway</h1>
-                    <p className="text-gray-500 text-sm mt-2">Azhar Faturohman Ahidin</p>
+                    <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Selamat Datang</h1>
+                    <p className="text-slate-500 dark:text-slate-400 mt-2">Masuk untuk melanjutkan ke dashboard</p>
                 </div>
 
-                {error && (
-                    <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm text-center">
-                        {error}
-                    </div>
-                )}
+                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden">
+                    <div className="p-8">
+                        {error && (
+                            <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800 text-rose-600 dark:text-rose-400 rounded-2xl flex items-start gap-3 animate-shake">
+                                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                                <p className="text-sm font-medium">{error}</p>
+                            </div>
+                        )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                        <input 
-                            type="text" 
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Username / Email</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                                        <User size={18} />
+                                    </div>
+                                    <input 
+                                        type="text"
+                                        required
+                                        className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
+                                        placeholder="johndoe atau john@email.com"
+                                        value={identifier}
+                                        onChange={(e) => setIdentifier(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <div className="flex justify-between items-center ml-1">
+                                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Password</label>
+                                    <a href="#" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Lupa password?</a>
+                                </div>
+                                <PasswordInput 
+                                    required
+                                    className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                disabled={loading}
+                                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 disabled:opacity-70 group"
+                            >
+                                {loading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                ) : (
+                                    <>
+                                        Masuk Sekarang
+                                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
+                            </button>
+                        </form>
+
+                        <div className="my-6 flex items-center gap-4">
+                            <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+                            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Atau masuk dengan</span>
+                            <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+                        </div>
+
+                        <div className="flex justify-center">
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={() => setError('Google Login gagal dimuat')}
+                                useOneTap
+                                theme="filled_blue"
+                                shape="pill"
+                                width="100%"
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <PasswordInput 
-                            type="password" 
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+
+                    <div className="p-6 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 text-center">
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">
+                            Belum punya akun?{' '}
+                            <Link to="/register" className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
+                                Daftar Sekarang
+                            </Link>
+                        </p>
                     </div>
-                    <button 
-                        type="submit" 
-                        disabled={loading}
-                        className={`w-full py-2 px-4 rounded-lg text-white font-medium transition-colors ${loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
-                    >
-                        {loading ? 'Memproses...' : 'Login'}
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     );

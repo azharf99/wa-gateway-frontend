@@ -1,15 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Tambahkan ini
+import { jwtDecode } from 'jwt-decode';
 import axiosInstance, { setAccessToken } from '../api/axios';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [token, setTokenState] = useState(null);
-    const [user, setUser] = useState(null); // Tambahkan state user
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Helper untuk update state React sekaligus decode data user
     const updateToken = (newToken) => {
         setTokenState(newToken);
         setAccessToken(newToken);
@@ -17,7 +16,7 @@ export const AuthProvider = ({ children }) => {
         if (newToken) {
             try {
                 const decoded = jwtDecode(newToken);
-                setUser(decoded); // Ekstrak payload dari token
+                setUser(decoded);
             } catch (error) {
                 console.error("Gagal mendecode token", error);
                 setUser(null);
@@ -27,7 +26,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // LISTENER: Menangkap update token dari axios.js secara otomatis
     useEffect(() => {
         const handleBackgroundRefresh = (e) => {
             const newToken = e.detail;
@@ -38,7 +36,6 @@ export const AuthProvider = ({ children }) => {
         return () => window.removeEventListener('onTokenRefreshed', handleBackgroundRefresh);
     }, []);
 
-    // SILENT LOGIN
     useEffect(() => {
         const checkSession = async () => {
             try {
@@ -53,13 +50,37 @@ export const AuthProvider = ({ children }) => {
         checkSession();
     }, []);
 
-    const login = async (username, password) => {
+    const login = async (identifier, password) => {
         try {
-            const res = await axiosInstance.post('/auth/login', { username, password });
+            const res = await axiosInstance.post('/auth/login', { identifier, password });
             updateToken(res.data.data.access_token);
             return { success: true };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Koneksi ke server gagal' };
+        }
+    };
+
+    const register = async (userData) => {
+        try {
+            const res = await axiosInstance.post('/auth/register', userData);
+            // Registration might log the user in automatically or require manual login
+            // Assuming backend returns token on success or user needs to login
+            if (res.data.data?.access_token) {
+                updateToken(res.data.data.access_token);
+            }
+            return { success: true, message: res.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Registrasi gagal' };
+        }
+    };
+
+    const googleLogin = async (googleToken) => {
+        try {
+            const res = await axiosInstance.post('/auth/google', { token: googleToken });
+            updateToken(res.data.data.access_token);
+            return { success: true };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Google Login gagal' };
         }
     };
 
@@ -76,9 +97,9 @@ export const AuthProvider = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-gray-500 font-medium flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex items-center justify-center transition-colors">
+                <div className="text-gray-500 dark:text-slate-400 font-medium flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
                     Memeriksa sesi keamanan...
                 </div>
             </div>
@@ -86,9 +107,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        // Jangan lupa masukkan user ke dalam value
-        <AuthContext.Provider value={{ token, user, login, logout }}>
+        <AuthContext.Provider value={{ token, user, login, register, googleLogin, logout }}>
             {children}
         </AuthContext.Provider>
     );
-};
+};
