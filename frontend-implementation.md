@@ -138,7 +138,23 @@ Manage automated responses based on keyword matching.
 
 ---
 
-## 8. Frontend Implementation Notes
+## 8. User Management (Admin Only)
+
+Administrative endpoints to manage application users. These routes are protected by `AdminOnly` middleware.
+
+**Base Path:** `/api/users`
+
+| Method | Endpoint | Description | Auth Required | Payload |
+| :--- | :--- | :--- | :---: | :--- |
+| `GET` | `/` | List users (Paginated) | ✅ (Admin) | Query: `page`, `limit`, `search` |
+| `GET` | `/:id` | Get user detail | ✅ (Admin) | - |
+| `POST` | `/` | Create user | ✅ (Admin) | `username`, `email`, `password`, `role` |
+| `PUT` | `/:id` | Update user | ✅ (Admin) | `username`, `email`, `password` (optional), `role` |
+| `DELETE`| `/:id` | Delete user | ✅ (Admin) | - |
+
+---
+
+## 9. Frontend Implementation Notes
 
 1. **RBAC Behavior**: The API logic uses the `Authorization` token to identify the user making the request. Normal users only retrieve/modify their own data (filtered by `user_id`). Admins can see all data across the platform. You **do not** need to explicitly pass `user_id` in standard payloads; the backend extracts it securely from the JWT.
 2. **Error Handling**: Standardize error handling on the frontend. Expect a JSON structure `{ "error": "Message" }` when the status code is 4xx or 5xx.

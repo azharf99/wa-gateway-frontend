@@ -20,6 +20,7 @@ import AccountSettings from '../components/AccountSettings';
 import ApiKeyManager from '../components/ApiKeyManager';
 import AutoReplyManager from '../components/AutoReplyManager';
 import MessageLogs from '../components/MessageLogs';
+import UserManager from '../components/UserManager';
 
 const Dashboard = () => {
     const { logout, user } = useContext(AuthContext);
@@ -104,6 +105,7 @@ const Dashboard = () => {
         { id: 'contact', label: 'Buku Kontak', icon: <Contact className="w-5 h-5" /> },
         { id: 'logs', label: 'Riwayat & Tarik Pesan', icon: <History className="w-5 h-5" /> },
         { id: 'apikey', label: 'API Key Integrasi', icon: <Key className="w-5 h-5" /> },
+        ...(user?.role === 'admin' ? [{ id: 'users', label: 'Manajemen User', icon: <ShieldCheck className="w-5 h-5" /> }] : []),
         { id: 'account', label: 'Pengaturan Akun', icon: <User className="w-5 h-5" /> },
     ];
 
@@ -159,6 +161,7 @@ const Dashboard = () => {
             case 'contact': return <ContactManager />;
             case 'logs': return <MessageLogs deviceId={activeDeviceId} />;
             case 'apikey': return <ApiKeyManager />;
+            case 'users': return <UserManager />;
             case 'account': return <AccountSettings />;
             default: return <DeviceManager devices={devices} refreshDevices={fetchGlobalDevices} />;
         }
