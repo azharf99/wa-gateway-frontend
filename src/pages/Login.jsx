@@ -114,14 +114,14 @@ const Login = () => {
                             <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
                         </div>
 
-                        <div className="flex justify-center">
+                        <div className="flex justify-center w-full">
                             <GoogleLogin
                                 onSuccess={handleGoogleSuccess}
                                 onError={() => setError('Google Login gagal dimuat')}
                                 useOneTap
                                 theme="filled_blue"
                                 shape="pill"
-                                width="100%"
+                                width="320"
                             />
                         </div>
                     </div>
