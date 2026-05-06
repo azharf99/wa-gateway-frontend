@@ -34,7 +34,7 @@ function App() {
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route 
-                                path="/dashboard" 
+                                path="/dashboard/:tab?" 
                                 element={
                                     <ProtectedRoute>
                                         <Dashboard />

@@ -101,7 +101,8 @@ const DeviceManager = ({ devices, refreshDevices }) => {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className="font-bold text-lg text-gray-800 dark:text-slate-100">{d.name}</h3>
-                                    <p className="text-sm text-gray-500 font-mono mt-1">{d.phone || 'Menunggu scan QR...'}</p>
+                                    <p className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest mb-1">ID: {d.id}</p>
+                                    <p className="text-sm text-gray-500 font-mono">{d.phone || 'Menunggu scan QR...'}</p>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${
                                     d.status === 'CONNECTED' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 

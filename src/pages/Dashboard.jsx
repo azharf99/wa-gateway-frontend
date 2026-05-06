@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
     LogOut, Smartphone, Users, Send, Contact, User, Key, 
     AlarmClock, CalendarClock, Megaphone, Menu, MessageSquareQuote, 
@@ -24,9 +24,17 @@ import UserManager from '../components/UserManager';
 
 const Dashboard = () => {
     const { logout, user } = useContext(AuthContext);
-    const navigate = useNavigate();
-    
-    const [activeTab, setActiveTab] = useState('status');
+    const { tab } = useParams();
+    const [activeTab, setActiveTab] = useState(tab || 'status');
+
+    // Sinkronkan activeTab dengan URL jika user menekan tombol back/forward atau refresh
+    useEffect(() => {
+        if (tab) {
+            setActiveTab(tab);
+        } else {
+            setActiveTab('status');
+        }
+    }, [tab]);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // ==========================================
@@ -225,7 +233,7 @@ const Dashboard = () => {
                         <button
                             key={item.id}
                             onClick={() => {
-                                setActiveTab(item.id);
+                                navigate(`/dashboard/${item.id}`);
                                 setIsMobileMenuOpen(false); 
                             }}
                             className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
