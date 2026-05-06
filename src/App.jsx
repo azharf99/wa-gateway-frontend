@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Landing from './pages/Landing';
 
 function App() {
     // Vite requires VITE_ prefix for environment variables to be exposed to the client
@@ -29,10 +30,11 @@ function App() {
                 <AuthProvider>
                     <Router>
                         <Routes>
+                            <Route path="/" element={<Landing />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route 
-                                path="/" 
+                                path="/dashboard" 
                                 element={
                                     <ProtectedRoute>
                                         <Dashboard />

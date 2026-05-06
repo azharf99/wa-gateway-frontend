@@ -32,7 +32,7 @@ const Login = () => {
             const recaptchaToken = await executeRecaptcha('login');
             const result = await login(identifier, password, recaptchaToken);
             if (result.success) {
-                navigate('/');
+                navigate('/dashboard');
             } else {
                 setError(result.message);
                 setLoading(false);
@@ -47,7 +47,7 @@ const Login = () => {
         setLoading(true);
         const result = await googleLogin(credentialResponse.credential);
         if (result.success) {
-            navigate('/');
+            navigate('/dashboard');
         } else {
             setError(result.message);
             setLoading(false);
