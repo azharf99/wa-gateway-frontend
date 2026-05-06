@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-    Smartphone, Send, Megaphone, CalendarClock, 
+import {
+    Smartphone, Send, Megaphone, CalendarClock,
     MessageSquareQuote, Key, ShieldCheck, CheckCircle2,
     ArrowRight, MessageSquare, Zap, Users, BarChart3
 } from 'lucide-react';
@@ -80,6 +80,7 @@ const Landing = () => {
                         <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">
                             WA Gateway
                         </span>
+                        <span className="text-sm font-normal text-slate-500">by azharfa.cloud</span>
                     </div>
                     <div className="hidden md:flex items-center gap-8">
                         <a href="#features" className="text-sm font-semibold text-slate-600 hover:text-emerald-600 transition-colors">Fitur</a>
@@ -115,7 +116,7 @@ const Landing = () => {
                             Lihat Fitur
                         </a>
                     </div>
-                    
+
                     {/* Dashboard Preview */}
                     <div className="mt-20 relative">
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent z-10"></div>
@@ -159,7 +160,7 @@ const Landing = () => {
                                             </div>
                                             <div className="flex items-end justify-between h-40 gap-2">
                                                 {[40, 70, 45, 90, 65, 80, 100].map((h, i) => (
-                                                    <div key={i} className="flex-1 bg-emerald-100 hover:bg-emerald-500 rounded-t-lg transition-all cursor-pointer relative group" style={{height: `${h}%`}}>
+                                                    <div key={i} className="flex-1 bg-emerald-100 hover:bg-emerald-500 rounded-t-lg transition-all cursor-pointer relative group" style={{ height: `${h}%` }}>
                                                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                                             {h * 10} Pesan
                                                         </div>
@@ -256,13 +257,12 @@ const Landing = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <Link 
-                                    to="/register" 
-                                    className={`w-full py-4 rounded-2xl text-center font-bold transition-all ${
-                                        p.popular 
-                                            ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xl shadow-emerald-600/20' 
-                                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                    }`}
+                                <Link
+                                    to="/register"
+                                    className={`w-full py-4 rounded-2xl text-center font-bold transition-all ${p.popular
+                                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xl shadow-emerald-600/20'
+                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
                                 >
                                     {p.cta}
                                 </Link>
@@ -277,7 +277,7 @@ const Landing = () => {
                 <div className="max-w-5xl mx-auto bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-600/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-600/20 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                    
+
                     <h2 className="text-3xl md:text-5xl font-black text-white mb-6 relative z-10">Siap Untuk Memulai?</h2>
                     <p className="text-slate-400 text-lg mb-10 max-w-xl mx-auto relative z-10 leading-relaxed">
                         Bergabunglah dengan ribuan bisnis yang telah menggunakan WA Gateway untuk meningkatkan produktivitas komunikasi mereka.
@@ -312,7 +312,7 @@ const Landing = () => {
                             <a href="#" className="hover:text-emerald-600">Kebijakan Privasi</a>
                         </div>
                         <div className="text-sm font-bold text-slate-400">
-                            © 2026 WA Gateway. Dibuat dengan ❤️ untuk kemajuan bisnis.
+                            © 2026 WA Gateway. Dibuat dengan ❤️ oleh <a href="https://azharfa.cloud" className="hover:text-emerald-600">azharfa.cloud</a> untuk kemajuan bisnis.
                         </div>
                     </div>
                 </div>
