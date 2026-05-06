@@ -26,6 +26,7 @@ Authentication is handled via **JWT (JSON Web Tokens)** or **API Keys**.
 | `POST` | `/google` | Google OAuth Login | ❌ | `token` (from Google OAuth SDK) |
 | `POST` | `/refresh` | Refresh JWT Token | ❌ | `{ "refresh_token": "..." }` |
 | `PUT` | `/change-password` | Change Password | ✅ | `old_password`, `new_password` |
+| `PUT` | `/profile` | Update Profile | ✅ | `name`, `username`, `password` (optional) |
 | `GET` | `/user/:id` | Get User Profile | ✅ | - |
 | `POST` | `/logout` | Logout | ✅ | - |
 
@@ -149,7 +150,7 @@ Administrative endpoints to manage application users. These routes are protected
 | `GET` | `/` | List users (Paginated) | ✅ (Admin) | Query: `page`, `limit`, `search` |
 | `GET` | `/:id` | Get user detail | ✅ (Admin) | - |
 | `POST` | `/` | Create user | ✅ (Admin) | `username`, `email`, `password`, `role` |
-| `PUT` | `/:id` | Update user | ✅ (Admin) | `username`, `email`, `password` (optional), `role` |
+| `PUT` | `/:id` | Update user | ✅ (Admin) | `name`, `username`, `password` (optional), `role` |
 | `DELETE`| `/:id` | Delete user | ✅ (Admin) | - |
 
 ---

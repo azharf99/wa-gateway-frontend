@@ -5,14 +5,20 @@ import { AuthContext } from '../context/AuthContext';
 import PasswordInput from './PasswordInput';
 
 const AccountSettings = () => {
-    const { user: authUser } = useContext(AuthContext);
-    const [profile, setProfile] = useState(authUser); // Gunakan data dari context sebagai awal
+    const { user: authUser, updateUser } = useContext(AuthContext);
+    const [profile, setProfile] = useState(authUser);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [profileForm, setProfileForm] = useState({
+        name: authUser?.name || '',
+        username: authUser?.username || ''
+    });
     const [formData, setFormData] = useState({
         old_password: '',
         new_password: '',
         confirm_password: ''
     });
     const [loading, setLoading] = useState(false);
+    const [profileLoading, setProfileLoading] = useState(false);
     const [alert, setAlert] = useState({ show: false, type: '', text: '' });
 
     const showAlert = (type, text) => {
@@ -21,11 +27,18 @@ const AccountSettings = () => {
     };
 
     const fetchProfile = async () => {
-        if (!authUser?.id) return; // Jangan panggil jika ID belum ada
+        if (!authUser?.id) return;
         
         try {
             const res = await axiosInstance.get(`/auth/user/${authUser.id}`);
-            setProfile(res.data.data);
+            const userData = res.data.data;
+            setProfile(userData);
+            setProfileForm({
+                name: userData.name || '',
+                username: userData.username || ''
+            });
+            // Update context as well to keep it in sync
+            updateUser(userData);
         } catch (error) {
             console.error("Gagal mengambil profil", error);
         }
@@ -35,7 +48,26 @@ const AccountSettings = () => {
         if (authUser?.id) {
             fetchProfile();
         }
-    }, [authUser?.id]); // Refetch jika ID berubah atau tersedia
+    }, [authUser?.id]);
+
+    const handleProfileSubmit = async (e) => {
+        e.preventDefault();
+        setProfileLoading(true);
+        try {
+            const res = await axiosInstance.put('/auth/profile', {
+                name: profileForm.name,
+                username: profileForm.username
+            });
+            
+            showAlert('success', res.data.message || 'Profil berhasil diperbarui.');
+            setIsEditingProfile(false);
+            fetchProfile(); // Refresh profile data
+        } catch (error) {
+            showAlert('error', error.response?.data?.message || 'Gagal memperbarui profil.');
+        } finally {
+            setProfileLoading(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -87,7 +119,7 @@ const AccountSettings = () => {
                             <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800"></div>
                         </div>
                     </div>
-                    <div className="text-center md:text-left">
+                    <div className="text-center md:text-left flex-1">
                         <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100">{profile?.name || profile?.username}</h2>
                         <p className="text-slate-500 dark:text-slate-400 font-medium">
                             @{profile?.username} • ID: {profile?.id}
@@ -96,43 +128,97 @@ const AccountSettings = () => {
                             <Shield size={12} /> {profile?.role || 'User'}
                         </div>
                     </div>
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-3">
-                    Detail Akun
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
-                            <User size={24} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Nama Lengkap</p>
-                            <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.name || '-'}</p>
-                        </div>
-                    </div>
-
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
-                            <Fingerprint size={24} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Username</p>
-                            <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.username || '...'}</p>
-                        </div>
-                    </div>
-
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 md:col-span-2">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
-                            <Mail size={24} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email Terdaftar</p>
-                            <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.email || '...'}</p>
-                        </div>
+                    <div>
+                        <button 
+                            onClick={() => setIsEditingProfile(!isEditingProfile)}
+                            className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl transition-all border border-slate-200 dark:border-slate-700"
+                        >
+                            {isEditingProfile ? 'Batal Edit' : 'Edit Profil'}
+                        </button>
                     </div>
                 </div>
+
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-3">
+                        Detail Akun
+                    </h3>
+                </div>
+
+                {isEditingProfile ? (
+                    <form onSubmit={handleProfileSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Nama Lengkap</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                                        <User size={18} />
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
+                                        value={profileForm.name}
+                                        onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Username</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                                        <Fingerprint size={18} />
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
+                                        value={profileForm.username}
+                                        onChange={(e) => setProfileForm({...profileForm, username: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <button 
+                            type="submit" 
+                            disabled={profileLoading}
+                            className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-70 flex justify-center items-center"
+                        >
+                            {profileLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : 'Simpan Perubahan'}
+                        </button>
+                    </form>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
+                                <User size={24} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Nama Lengkap</p>
+                                <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.name || '-'}</p>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
+                                <Fingerprint size={24} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Username</p>
+                                <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.username || '...'}</p>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 md:col-span-2">
+                            <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
+                                <Mail size={24} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email Terdaftar</p>
+                                <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.email || '...'}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Password Section */}

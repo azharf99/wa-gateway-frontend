@@ -111,6 +111,13 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (newUserData) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            ...newUserData
+        }));
+    };
+
     const logout = async () => {
         try {
             await axiosInstance.post('/auth/logout');
@@ -134,7 +141,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ token, user, login, register, googleLogin, logout }}>
+        <AuthContext.Provider value={{ token, user, login, register, googleLogin, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );
