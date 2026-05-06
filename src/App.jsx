@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Landing from './pages/Landing';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
     // Vite requires VITE_ prefix for environment variables to be exposed to the client
@@ -33,6 +35,8 @@ function App() {
                             <Route path="/" element={<Landing />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                            <Route path="/reset-password" element={<ResetPassword />} />
                             <Route 
                                 path="/dashboard/:tab?" 
                                 element={

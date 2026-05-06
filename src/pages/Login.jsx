@@ -94,9 +94,9 @@ const Login = () => {
                             </div>
 
                             <div className="space-y-1.5">
-                                <div className="flex justify-between items-center ml-1">
+                                    <div className="flex justify-between items-center ml-1">
                                     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Password</label>
-                                    <a href="#" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Lupa password?</a>
+                                    <Link to="/forgot-password" size="sm" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Lupa password?</Link>
                                 </div>
                                 <PasswordInput 
                                     required
