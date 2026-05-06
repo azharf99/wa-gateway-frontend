@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, AlertCircle, CheckCircle2, ArrowLeft, Send } from 'lucide-react';
-import axios from 'axios';
+import axiosInstance from '../api/axios';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -15,8 +15,7 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            const apiBaseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8003/api';
-            await axios.post(`${apiBaseUrl}/auth/forgot-password`, { email });
+            await axiosInstance.post('/auth/forgot-password', { email });
             setSuccess(true);
         } catch (err) {
             setError(err.response?.data?.message || 'Terjadi kesalahan saat mengirim link reset password');
