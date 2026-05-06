@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Key, Copy, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Key, Copy, RefreshCw, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import axiosInstance from '../api/axios';
 
 const ApiKeyManager = () => {
@@ -7,6 +7,7 @@ const ApiKeyManager = () => {
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ type: '', message: '' });
     const [copied, setCopied] = useState(false);
+    const [showKey, setShowKey] = useState(false);
 
     // Ambil API Key saat komponen dimuat
     useEffect(() => {
@@ -84,11 +85,18 @@ const ApiKeyManager = () => {
                     <div className="flex items-center space-x-2">
                         <div className="relative flex-1">
                             <input
-                                type="text"
+                                type={showKey ? "text" : "password"}
                                 readOnly
                                 value={apiKey || 'Memuat...'}
                                 className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 dark:border-slate-800 rounded-lg text-gray-600 font-mono text-sm focus:outline-none"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowKey(!showKey)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                            >
+                                {showKey ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            </button>
                         </div>
                         <button
                             onClick={handleCopy}
