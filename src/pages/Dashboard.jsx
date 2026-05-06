@@ -184,16 +184,40 @@ const Dashboard = () => {
                     isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
-                <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-950/50">
-                    <div>
+                <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50">
+                    <div className="flex justify-between items-center mb-6">
                         <h1 className="text-xl font-black text-transparent bg-clip-text bg-linear-to-r from-emerald-500 to-teal-500 dark:from-green-400 dark:to-emerald-500 flex items-center">
                             <Smartphone className="mr-2 text-emerald-500 dark:text-green-400 w-6 h-6" /> WA Gateway
                         </h1>
-                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">azharfa.cloud • {user?.username}</p>
+                        <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden p-2 text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:text-white rounded-lg dark:hover:bg-slate-800">
+                            <X className="w-5 h-5" />
+                        </button>
                     </div>
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden p-2 text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:text-white rounded-lg dark:hover:bg-slate-800">
-                        <X className="w-5 h-5" />
-                    </button>
+
+                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="relative">
+                            {user?.avatar ? (
+                                <img 
+                                    src={user.avatar} 
+                                    alt={user.name || user.username} 
+                                    className="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/20"
+                                />
+                            ) : (
+                                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg">
+                                    <User className="w-5 h-5" />
+                                </div>
+                            )}
+                            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 truncate">
+                                {user?.name || user?.username}
+                            </h3>
+                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">
+                                {user?.role || 'User'} • {user?.username}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">

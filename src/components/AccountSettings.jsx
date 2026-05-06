@@ -70,16 +70,51 @@ const AccountSettings = () => {
         <div className="mx-auto max-w-4xl space-y-8 animate-fade-in">
             {/* Profil Section */}
             <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-                <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-8 flex items-center gap-3">
-                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
-                        <User size={24} />
+                <div className="flex flex-col md:flex-row items-center gap-6 mb-10 pb-10 border-b border-slate-100 dark:border-slate-800">
+                    <div className="relative group">
+                        {profile?.avatar ? (
+                            <img 
+                                src={profile.avatar} 
+                                alt={profile.name || profile.username} 
+                                className="w-24 h-24 rounded-3xl object-cover ring-4 ring-emerald-500/10 shadow-xl"
+                            />
+                        ) : (
+                            <div className="w-24 h-24 rounded-3xl bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-xl">
+                                <User size={40} />
+                            </div>
+                        )}
+                        <div className="absolute -bottom-2 -right-2 bg-white dark:bg-slate-800 p-1.5 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700">
+                            <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800"></div>
+                        </div>
                     </div>
-                    Informasi Profil
-                </h2>
+                    <div className="text-center md:text-left">
+                        <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100">{profile?.name || profile?.username}</h2>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">
+                            @{profile?.username} • ID: {profile?.id}
+                        </p>
+                        <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                            <Shield size={12} /> {profile?.role || 'User'}
+                        </div>
+                    </div>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-3">
+                    Detail Akun
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400">
+                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
+                            <User size={24} />
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Nama Lengkap</p>
+                            <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.name || '-'}</p>
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
                             <Fingerprint size={24} />
                         </div>
                         <div>
@@ -88,23 +123,13 @@ const AccountSettings = () => {
                         </div>
                     </div>
 
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4 md:col-span-2">
+                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400 shadow-sm">
                             <Mail size={24} />
                         </div>
                         <div>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email</p>
+                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email Terdaftar</p>
                             <p className="font-bold text-slate-700 dark:text-slate-200">{profile?.email || '...'}</p>
-                        </div>
-                    </div>
-
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-400">
-                            <Shield size={24} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Role</p>
-                            <p className="font-bold text-slate-700 dark:text-slate-200 uppercase">{profile?.role || '...'}</p>
                         </div>
                     </div>
                 </div>

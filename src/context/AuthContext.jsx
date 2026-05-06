@@ -9,11 +9,13 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const updateToken = (newToken) => {
+    const updateToken = (newToken, userData = null) => {
         setTokenState(newToken);
         setAccessToken(newToken);
         
-        if (newToken) {
+        if (userData) {
+            setUser(userData);
+        } else if (newToken) {
             try {
                 const decoded = jwtDecode(newToken);
                 // Normalisasi data user agar selalu punya field .id
@@ -45,7 +47,8 @@ export const AuthProvider = ({ children }) => {
         const checkSession = async () => {
             try {
                 const res = await axiosInstance.post('/auth/refresh');
-                updateToken(res.data.data.access_token);
+                const { access_token, user: userData } = res.data.data;
+                updateToken(access_token, userData);
             } catch (error) {
                 updateToken(null);
             } finally {
