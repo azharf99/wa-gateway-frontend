@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = '/api'; // Pastikan ini sesuai dengan prefix route backend kamu
+const BASE_URL = import.meta.env.VITE_BASE_URL || '/api';
 
 let accessToken = null;
 let isRefreshing = false; // Flag status refresh

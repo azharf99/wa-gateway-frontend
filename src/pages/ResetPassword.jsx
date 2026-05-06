@@ -10,7 +10,7 @@ const ResetPassword = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
-    
+
     const navigate = useNavigate();
     const location = useLocation();
     const query = new URLSearchParams(location.search);
@@ -34,10 +34,10 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8003/api';
-            await axios.post(`${apiBaseUrl}/auth/reset-password`, { 
-                token, 
-                password 
+            const apiBaseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8003/api';
+            await axios.post(`${apiBaseUrl}/auth/reset-password`, {
+                token,
+                password
             });
             setSuccess(true);
             setTimeout(() => navigate('/login'), 3000);
@@ -78,7 +78,7 @@ const ResetPassword = () => {
                                 <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
                                     Password Anda telah berhasil diperbarui. Anda akan diarahkan ke halaman login dalam beberapa detik.
                                 </p>
-                                <Link 
+                                <Link
                                     to="/login"
                                     className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-500/25 hover:bg-emerald-700 transition-all"
                                 >
@@ -90,7 +90,7 @@ const ResetPassword = () => {
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Password Baru</label>
-                                    <PasswordInput 
+                                    <PasswordInput
                                         required
                                         className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
                                         placeholder="••••••••"
@@ -101,7 +101,7 @@ const ResetPassword = () => {
 
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Konfirmasi Password</label>
-                                    <PasswordInput 
+                                    <PasswordInput
                                         required
                                         className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
                                         placeholder="••••••••"
@@ -110,8 +110,8 @@ const ResetPassword = () => {
                                     />
                                 </div>
 
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={loading || !token}
                                     className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 disabled:opacity-70 group mt-2"
                                 >

@@ -15,7 +15,7 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8003/api';
+            const apiBaseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8003/api';
             await axios.post(`${apiBaseUrl}/auth/forgot-password`, { email });
             setSuccess(true);
         } catch (err) {
@@ -53,10 +53,10 @@ const ForgotPassword = () => {
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Cek Email Anda</h3>
                                 <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
-                                    Kami telah mengirimkan link reset password ke <strong>{email}</strong>. 
+                                    Kami telah mengirimkan link reset password ke <strong>{email}</strong>.
                                     Silakan klik link tersebut untuk melanjutkan.
                                 </p>
-                                <Link 
+                                <Link
                                     to="/login"
                                     className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
                                 >
@@ -72,7 +72,7 @@ const ForgotPassword = () => {
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
                                             <Mail size={18} />
                                         </div>
-                                        <input 
+                                        <input
                                             type="email"
                                             required
                                             className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none transition-all dark:text-white"
@@ -83,8 +83,8 @@ const ForgotPassword = () => {
                                     </div>
                                 </div>
 
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={loading}
                                     className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 disabled:opacity-70 group"
                                 >
@@ -98,7 +98,7 @@ const ForgotPassword = () => {
                                     )}
                                 </button>
 
-                                <Link 
+                                <Link
                                     to="/login"
                                     className="flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 text-sm font-semibold hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                                 >
