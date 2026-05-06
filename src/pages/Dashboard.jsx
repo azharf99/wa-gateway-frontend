@@ -24,6 +24,7 @@ import UserManager from '../components/UserManager';
 
 const Dashboard = () => {
     const { logout, user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const { tab } = useParams();
     const [activeTab, setActiveTab] = useState(tab || 'status');
 
