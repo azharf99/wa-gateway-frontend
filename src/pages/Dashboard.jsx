@@ -100,7 +100,14 @@ const Dashboard = () => {
     }, [isDarkMode]);
 
     const [devices, setDevices] = useState([]);
-    const [activeDeviceId, setActiveDeviceId] = useState('');
+    const [activeDeviceId, setActiveDeviceId] = useState(() => localStorage.getItem('selectedDeviceId') || '');
+
+    // Sinkronkan pilihan device ke localStorage agar awet saat refresh halaman
+    useEffect(() => {
+        if (activeDeviceId) {
+            localStorage.setItem('selectedDeviceId', activeDeviceId);
+        }
+    }, [activeDeviceId]);
     const [isFetching, setIsFetching] = useState(true);
 
     const navItems = [
@@ -123,9 +130,21 @@ const Dashboard = () => {
             const res = await axiosInstance.get('/devices/list');
             const fetchedDevices = res.data.data || [];
             setDevices(fetchedDevices);
-            if (fetchedDevices.length > 0 && !activeDeviceId) {
-                setActiveDeviceId(String(fetchedDevices[0].id)); 
-            }
+            
+            // 🧠 LOGIC CERDAS: Menentukan activeDeviceId tanpa terkena stale closure
+            setActiveDeviceId(prev => {
+                if (fetchedDevices.length === 0) return '';
+                
+                // Jika sudah ada pilihan sebelumnya (dari state atau localStorage)
+                if (prev) {
+                    const stillExists = fetchedDevices.find(d => String(d.id) === prev);
+                    if (stillExists) return prev; // Tetap gunakan yang lama jika masih ada
+                }
+                
+                // Jika belum ada pilihan ATAU pilihan lama sudah tidak valid/dihapus
+                // Ambil device pertama sebagai default
+                return String(fetchedDevices[0].id);
+            });
         } catch (error) {
             console.error("Gagal memuat device:", error);
         } finally {
